@@ -199,230 +199,237 @@ GEF <span style=color:#66d9ef>for</span> linux ready, type <span style=color:#96
 Reading symbols from hell86...
 (No debugging symbols found in hell86)
 gef<span style=color:#960050;background-color:#1e0010>➤</span>  dump binary memory flag_func <span style=color:#ae81ff>0x1190</span> <span style=color:#ae81ff>0x1946</span>
-</code></pre></div><p>As it was my first time creating a diassembler i got some help from a previously made disassembler.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e>#!/usr/bin/env python3</span>
+</code></pre></div><p>As it was my first time creating a diassembler i got some help from a previously made disassembler.</p><div class=collapsable-code><input id=1 type=checkbox checked>
+<label for=1><span class=collapsable-code__language>python</span>
+<span class=collapsable-code__title>vm disassembler</span>
+<span class=collapsable-code__toggle data-label-expand=△ data-label-collapse=▽></span></label><pre class=language-python><code>
+#!/usr/bin/env python3
+def disassemble(instructions):
 
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>disassemble</span>(instructions):
+        registers = [&#39;r8&#39;, &#39;r9&#39;, &#39;r10&#39;, &#39;r11&#39;, &#39;r12&#39;, &#39;r13&#39;, &#39;r14&#39;, &#39;r15&#39;, &#39;rdi&#39;, &#39;rsi&#39;,
+                 &#39;rbp&#39;, &#39;rbx&#39;, &#39;rdx&#39;, &#39;rax&#39;, &#39;rcx&#39;, &#39;rsp&#39;, &#39;rip&#39;]
 
-        registers <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#39;r8&#39;</span>, <span style=color:#e6db74>&#39;r9&#39;</span>, <span style=color:#e6db74>&#39;r10&#39;</span>, <span style=color:#e6db74>&#39;r11&#39;</span>, <span style=color:#e6db74>&#39;r12&#39;</span>, <span style=color:#e6db74>&#39;r13&#39;</span>, <span style=color:#e6db74>&#39;r14&#39;</span>, <span style=color:#e6db74>&#39;r15&#39;</span>, <span style=color:#e6db74>&#39;rdi&#39;</span>, <span style=color:#e6db74>&#39;rsi&#39;</span>,
-                 <span style=color:#e6db74>&#39;rbp&#39;</span>, <span style=color:#e6db74>&#39;rbx&#39;</span>, <span style=color:#e6db74>&#39;rdx&#39;</span>, <span style=color:#e6db74>&#39;rax&#39;</span>, <span style=color:#e6db74>&#39;rcx&#39;</span>, <span style=color:#e6db74>&#39;rsp&#39;</span>, <span style=color:#e6db74>&#39;rip&#39;</span>]
+        asm_instr = [
 
-        asm_instr <span style=color:#f92672>=</span> [
-
-        <span style=color:#e6db74>&#39;nop&#39;</span>, <span style=color:#75715e># no operation</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> + </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># addition</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> - </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># subtract</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> * </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># multiply</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> / </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># division (quotient)</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> % </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># division (reminder)</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> &gt;&gt; </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># right shift</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> &lt;&lt; </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># left shift</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = -</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># negation</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># mov a, b</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = byte [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>, <span style=color:#75715e># movzx</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = byte [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>, <span style=color:#75715e># movsx</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = word [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>, <span style=color:#75715e># movzx</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = word [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>, <span style=color:#75715e># movsx</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = dword [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>, <span style=color:#75715e># movzx</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = dword [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>, <span style=color:#75715e># movsx</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = qword [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>, <span style=color:#75715e># mov</span>
-        <span style=color:#e6db74>&#39;mov byte [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>], </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;mov word [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>], </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;mov dword [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>], </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;mov qword [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>+0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>], </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;push </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;push 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;pop </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> | </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> &amp; </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> ^ </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = ~ </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;cmp.s </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># smaller</span>
-        <span style=color:#e6db74>&#39;cmp.se </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># smaller or equal</span>
-        <span style=color:#e6db74>&#39;cmp.g </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># greater</span>
-        <span style=color:#e6db74>&#39;cmp.ge </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74> &#39;</span>, <span style=color:#75715e># greater or equal</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> == </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74> ; </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = 1&#39;</span>, <span style=color:#75715e>#equal</span>
-        <span style=color:#e6db74>&#39;cmp.in </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{3:s}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e>#inequal</span>
-        <span style=color:#e6db74>&#39;cmp.eq </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74>, 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># if equal to const</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> != 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74> ; </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = 1&#39;</span>, <span style=color:#75715e># if inequal to const</span>
-        <span style=color:#e6db74>&#39;cmp.z </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> ; </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74> = </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> == 0 &#39;</span>,
-        <span style=color:#e6db74>&#39;if </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> = 0 jmp 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;if </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> != 0 jmp 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;call 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>,
-        <span style=color:#e6db74>&#39;ret&#39;</span>,
-        <span style=color:#e6db74>&#39;if </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> != 0 ret&#39;</span>,
-        <span style=color:#e6db74>&#39;if </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> = 0 ret&#39;</span>,
-        <span style=color:#e6db74>&#39;lea </span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, [</span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> + 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>]&#39;</span>,
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> &gt;&gt; 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># rshift</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> &lt;&lt; 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>, <span style=color:#75715e># lshift</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> | 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>,  <span style=color:#75715e># or</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> &amp; 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>,  <span style=color:#75715e># and</span>
-        <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{1:s}</span><span style=color:#e6db74>, </span><span style=color:#e6db74>{2:s}</span><span style=color:#e6db74> ^ 0x</span><span style=color:#e6db74>{0:x}</span><span style=color:#e6db74>&#39;</span>   <span style=color:#75715e># xor</span>
+        &#39;nop&#39;, # no operation
+        &#39;{1:s} = {2:s} &#43; {3:s}&#39;, # addition
+        &#39;{1:s} = {2:s} - {3:s}&#39;, # subtract
+        &#39;{1:s} = {2:s} * {3:s}&#39;, # multiply
+        &#39;{1:s} = {2:s} / {3:s}&#39;, # division (quotient)
+        &#39;{1:s} = {2:s} % {3:s}&#39;, # division (reminder)
+        &#39;{1:s} = {2:s} &gt;&gt; {3:s}&#39;, # right shift
+        &#39;{1:s} = {2:s} &lt;&lt; {3:s}&#39;, # left shift
+        &#39;{1:s} = -{2:s}&#39;, # negation
+        &#39;{1:s} = 0x{0:x}&#39;, # mov a, b
+        &#39;{1:s} = byte [{2:s}&#43;0x{0:x}]&#39;, # movzx
+        &#39;{1:s} = byte [{2:s}&#43;0x{0:x}]&#39;, # movsx
+        &#39;{1:s} = word [{2:s}&#43;0x{0:x}]&#39;, # movzx
+        &#39;{1:s} = word [{2:s}&#43;0x{0:x}]&#39;, # movsx
+        &#39;{1:s} = dword [{2:s}&#43;0x{0:x}]&#39;, # movzx
+        &#39;{1:s} = dword [{2:s}&#43;0x{0:x}]&#39;, # movsx
+        &#39;{1:s} = qword [{2:s}&#43;0x{0:x}]&#39;, # mov
+        &#39;mov byte [{2:s}&#43;0x{0:x}], {3:s}&#39;,
+        &#39;mov word [{2:s}&#43;0x{0:x}], {3:s}&#39;,
+        &#39;mov dword [{2:s}&#43;0x{0:x}], {3:s}&#39;,
+        &#39;mov qword [{2:s}&#43;0x{0:x}], {3:s}&#39;,
+        &#39;push {2:s}&#39;,
+        &#39;push 0x{0:x}&#39;,
+        &#39;pop {1:s}&#39;,
+        &#39;{1:s} = {2:s}&#39;,
+        &#39;{1:s} = {2:s} | {3:s}&#39;,
+        &#39;{1:s} = {2:s} &amp; {3:s}&#39;,
+        &#39;{1:s} = {2:s} ^ {3:s}&#39;,
+        &#39;{1:s} = ~ {2:s}&#39;,
+        &#39;cmp.s {1:s}, {2:s}, {3:s}&#39;, # smaller
+        &#39;cmp.se {1:s}, {2:s}, {3:s}&#39;, # smaller or equal
+        &#39;cmp.g {1:s}, {2:s}, {3:s}&#39;, # greater
+        &#39;cmp.ge {1:s}, {2:s}, {3:s} &#39;, # greater or equal
+        &#39;{1:s} == {3:s} ; {1:s} = 1&#39;, #equal
+        &#39;cmp.in {1:s}, {2:s}, {3:s}&#39;, #inequal
+        &#39;cmp.eq {1:s}, {2:s}, 0x{0:x}&#39;, # if equal to const
+        &#39;{2:s} != 0x{0:x} ; {1:s} = 1&#39;, # if inequal to const
+        &#39;cmp.z {1:s}, {2:s} ; {1:s} = {2:s} == 0 &#39;,
+        &#39;if {2:s} = 0 jmp 0x{0:x}&#39;,
+        &#39;if {2:s} != 0 jmp 0x{0:x}&#39;,
+        &#39;call 0x{0:x}&#39;,
+        &#39;ret&#39;,
+        &#39;if {2:s} != 0 ret&#39;,
+        &#39;if {2:s} = 0 ret&#39;,
+        &#39;lea {1:s}, [{2:s} &#43; 0x{0:x}]&#39;,
+        &#39;{1:s}, {2:s} &gt;&gt; 0x{0:x}&#39;, # rshift
+        &#39;{1:s}, {2:s} &lt;&lt; 0x{0:x}&#39;, # lshift
+        &#39;{1:s}, {2:s} | 0x{0:x}&#39;,  # or
+        &#39;{1:s}, {2:s} &amp; 0x{0:x}&#39;,  # and
+        &#39;{1:s}, {2:s} ^ 0x{0:x}&#39;   # xor
         ]
 
-        <span style=color:#75715e>#print(len(assembly_mapping))</span>
-        addr <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x1190</span>
-        <span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> instructions:
+        #print(len(assembly_mapping))
+        addr = 0x1190
+        for i in instructions:
 
-            print(<span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{:&gt;10s}</span><span style=color:#e6db74>&#39;</span><span style=color:#f92672>.</span>format(<span style=color:#e6db74>&#39;0x</span><span style=color:#e6db74>{:x}</span><span style=color:#e6db74>: &#39;</span><span style=color:#f92672>.</span>format(addr)), end<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;&#39;</span>)
+            print(&#39;{:&gt;10s}&#39;.format(&#39;0x{:x}: &#39;.format(addr)), end=&#39;&#39;)
 
-            instr <span style=color:#f92672>=</span> int<span style=color:#f92672>.</span>from_bytes(i[<span style=color:#ae81ff>2</span>:<span style=color:#ae81ff>10</span>], byteorder<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;little&#39;</span>)
-            opcode <span style=color:#f92672>=</span> i[<span style=color:#ae81ff>10</span>]
-            arg1 <span style=color:#f92672>=</span> registers[i[<span style=color:#ae81ff>11</span>]]
-            arg2 <span style=color:#f92672>=</span> registers[i[<span style=color:#ae81ff>12</span>]]
-            arg3 <span style=color:#f92672>=</span> registers[i[<span style=color:#ae81ff>13</span>]]
-
-
-            print(asm_instr[opcode]<span style=color:#f92672>.</span>format(instr, arg1, arg2, arg3))
-            addr <span style=color:#f92672>+=</span> <span style=color:#ae81ff>14</span>
+            instr = int.from_bytes(i[2:10], byteorder=&#39;little&#39;)
+            opcode = i[10]
+            arg1 = registers[i[11]]
+            arg2 = registers[i[12]]
+            arg3 = registers[i[13]]
 
 
-<span style=color:#66d9ef>with</span> open(<span style=color:#e6db74>&#39;flag_func&#39;</span>, <span style=color:#e6db74>&#39;rb&#39;</span>) <span style=color:#66d9ef>as</span> f:
-   flag_func <span style=color:#f92672>=</span> f<span style=color:#f92672>.</span>read()
+            print(asm_instr[opcode].format(instr, arg1, arg2, arg3))
+            addr &#43;= 14
 
-instructions <span style=color:#f92672>=</span> [flag_func[i<span style=color:#f92672>*</span><span style=color:#ae81ff>14</span>:(i<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>)<span style=color:#f92672>*</span><span style=color:#ae81ff>14</span>] <span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> range(len(flag_func)<span style=color:#f92672>//</span><span style=color:#ae81ff>14</span>)]
+
+with open(&#39;flag_func&#39;, &#39;rb&#39;) as f:
+   flag_func = f.read()
+
+instructions = [flag_func[i*14:(i&#43;1)*14] for i in range(len(flag_func)//14)]
 disassemble(instructions)
-</code></pre></div><p>Now lets take a look at the actual disassembly of the vm</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp>  <span style=color:#ae81ff>0x1190</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x2</span>
-  <span style=color:#ae81ff>0x119e</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0x2</span> ; r8 <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
-  <span style=color:#ae81ff>0x11ac</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> r8 <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x11ba</span><span style=color:#f92672>:</span> lea rsi, [rsi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x8</span>]
-  <span style=color:#ae81ff>0x11c8</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> qword [rsi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x11d6</span><span style=color:#f92672>:</span> rip <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x11e4</span>
-  <span style=color:#ae81ff>0x11e4</span><span style=color:#f92672>:</span> push rbp
-  <span style=color:#ae81ff>0x11f2</span><span style=color:#f92672>:</span> rbp <span style=color:#f92672>=</span> rsp
-  <span style=color:#ae81ff>0x1200</span><span style=color:#f92672>:</span> lea rsp, [rsp <span style=color:#f92672>+</span> <span style=color:#ae81ff>0xfffffffffffffff0</span>]
-  <span style=color:#ae81ff>0x120e</span><span style=color:#f92672>:</span> mov qword [rbp<span style=color:#f92672>+</span><span style=color:#ae81ff>0xfffffffffffffff0</span>], rdi
-  <span style=color:#ae81ff>0x121c</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x17da</span>
-  <span style=color:#ae81ff>0x122a</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0x24</span> ; rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
-  <span style=color:#ae81ff>0x1238</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rax <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x13ce</span>
-  <span style=color:#ae81ff>0x1246</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x20cd</span>
-  <span style=color:#ae81ff>0x1254</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x17da</span>
-  <span style=color:#ae81ff>0x1262</span><span style=color:#f92672>:</span> mov qword [rbp<span style=color:#f92672>+</span><span style=color:#ae81ff>0xfffffffffffffff8</span>], rax
-  <span style=color:#ae81ff>0x1270</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> qword [rbp<span style=color:#f92672>+</span><span style=color:#ae81ff>0xfffffffffffffff0</span>]
-  <span style=color:#ae81ff>0x127e</span><span style=color:#f92672>:</span> rsi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x20cd</span>
-  <span style=color:#ae81ff>0x128c</span><span style=color:#f92672>:</span> rdx <span style=color:#f92672>=</span> rax
-  <span style=color:#ae81ff>0x129a</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x182e</span>
-  <span style=color:#ae81ff>0x12a8</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rax <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x13ce</span>
-  <span style=color:#ae81ff>0x12b6</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> qword [rbp<span style=color:#f92672>+</span><span style=color:#ae81ff>0xfffffffffffffff0</span>]
-  <span style=color:#ae81ff>0x12c4</span><span style=color:#f92672>:</span> rsi <span style=color:#f92672>=</span> byte [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x23</span>]
-  <span style=color:#ae81ff>0x12d2</span><span style=color:#f92672>:</span> rsi <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0x7d</span> ; rsi <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
-  <span style=color:#ae81ff>0x12e0</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rsi <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x13ce</span>
-  <span style=color:#ae81ff>0x12ee</span><span style=color:#f92672>:</span> rsi <span style=color:#f92672>=</span> qword [rbp<span style=color:#f92672>+</span><span style=color:#ae81ff>0xfffffffffffffff8</span>]
-  <span style=color:#ae81ff>0x12fc</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> rdi <span style=color:#f92672>+</span> rsi
-  <span style=color:#ae81ff>0x130a</span><span style=color:#f92672>:</span> rsi <span style=color:#f92672>=</span> <span style=color:#f92672>-</span>rsi
-  <span style=color:#ae81ff>0x1318</span><span style=color:#f92672>:</span> lea rsi, [rsi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x23</span>]
-  <span style=color:#ae81ff>0x1326</span><span style=color:#f92672>:</span> push rsi
-  <span style=color:#ae81ff>0x1334</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x1406</span>
-  <span style=color:#ae81ff>0x1342</span><span style=color:#f92672>:</span> pop rsi
-  <span style=color:#ae81ff>0x1350</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x13ce</span>
-  <span style=color:#ae81ff>0x135e</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> rax
-  <span style=color:#ae81ff>0x136c</span><span style=color:#f92672>:</span> push rdi
-  <span style=color:#ae81ff>0x137a</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x15fe</span>
-  <span style=color:#ae81ff>0x1388</span><span style=color:#f92672>:</span> pop rdi
-  <span style=color:#ae81ff>0x1396</span><span style=color:#f92672>:</span> push rax
-  <span style=color:#ae81ff>0x13a4</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x13b2</span><span style=color:#f92672>:</span> pop rax
-  <span style=color:#ae81ff>0x13c0</span><span style=color:#f92672>:</span> rip <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x13dc</span>
-  <span style=color:#ae81ff>0x13ce</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x1</span>
-  <span style=color:#ae81ff>0x13dc</span><span style=color:#f92672>:</span> rsp <span style=color:#f92672>=</span> rbp
-  <span style=color:#ae81ff>0x13ea</span><span style=color:#f92672>:</span> pop rbp
-  <span style=color:#ae81ff>0x13f8</span><span style=color:#f92672>:</span> ret
-  <span style=color:#ae81ff>0x1406</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x1414</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rsi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x1422</span><span style=color:#f92672>:</span> push rdi
-  <span style=color:#ae81ff>0x1430</span><span style=color:#f92672>:</span> push rsi
-  <span style=color:#ae81ff>0x143e</span><span style=color:#f92672>:</span> rdi, rsi <span style=color:#f92672>&lt;&lt;</span> <span style=color:#ae81ff>0x3</span>
-  <span style=color:#ae81ff>0x144c</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x145a</span><span style=color:#f92672>:</span> pop rsi
-  <span style=color:#ae81ff>0x1468</span><span style=color:#f92672>:</span> pop rdi
-  <span style=color:#ae81ff>0x1476</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x1484</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> rax
-  <span style=color:#ae81ff>0x1492</span><span style=color:#f92672>:</span> r9 <span style=color:#f92672>=</span> rax
-  <span style=color:#ae81ff>0x14a0</span><span style=color:#f92672>:</span> push r9
-  <span style=color:#ae81ff>0x14ae</span><span style=color:#f92672>:</span> push r8
-  <span style=color:#ae81ff>0x14bc</span><span style=color:#f92672>:</span> push rdi
-  <span style=color:#ae81ff>0x14ca</span><span style=color:#f92672>:</span> push rsi
-  <span style=color:#ae81ff>0x14d8</span><span style=color:#f92672>:</span> rsi <span style=color:#f92672>=</span> byte [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x14e6</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x20a0</span>
-  <span style=color:#ae81ff>0x14f4</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x18c8</span>
-  <span style=color:#ae81ff>0x1502</span><span style=color:#f92672>:</span> pop rsi
-  <span style=color:#ae81ff>0x1510</span><span style=color:#f92672>:</span> pop rdi
-  <span style=color:#ae81ff>0x151e</span><span style=color:#f92672>:</span> pop r8
-  <span style=color:#ae81ff>0x152c</span><span style=color:#f92672>:</span> pop r9
-  <span style=color:#ae81ff>0x153a</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x15c6</span>
-  <span style=color:#ae81ff>0x1548</span><span style=color:#f92672>:</span> r10 <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x20a0</span>
-  <span style=color:#ae81ff>0x1556</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> rax <span style=color:#f92672>-</span> r10
-  <span style=color:#ae81ff>0x1564</span><span style=color:#f92672>:</span> mov qword [r9<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>], rax
-  <span style=color:#ae81ff>0x1572</span><span style=color:#f92672>:</span> lea r9, [r9 <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x8</span>]
-  <span style=color:#ae81ff>0x1580</span><span style=color:#f92672>:</span> lea rdi, [rdi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x1</span>]
-  <span style=color:#ae81ff>0x158e</span><span style=color:#f92672>:</span> lea rsi, [rsi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0xffffffffffffffff</span>]
-  <span style=color:#ae81ff>0x159c</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rsi <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x14a0</span>
-  <span style=color:#ae81ff>0x15aa</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> r8
-  <span style=color:#ae81ff>0x15b8</span><span style=color:#f92672>:</span> ret
-  <span style=color:#ae81ff>0x15c6</span><span style=color:#f92672>:</span> rdi <span style=color:#f92672>=</span> r8
-  <span style=color:#ae81ff>0x15d4</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x15e2</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x15f0</span><span style=color:#f92672>:</span> ret
-  <span style=color:#ae81ff>0x15fe</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x1</span>
-  <span style=color:#ae81ff>0x160c</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rsi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x161a</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> qword [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x1628</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0x16</span> ; r8 <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
-  <span style=color:#ae81ff>0x1636</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> r8 <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x1644</span><span style=color:#f92672>:</span> push rdi
-  <span style=color:#ae81ff>0x1652</span><span style=color:#f92672>:</span> push rsi
-  <span style=color:#ae81ff>0x1660</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x1724</span>
-  <span style=color:#ae81ff>0x166e</span><span style=color:#f92672>:</span> pop rsi
-  <span style=color:#ae81ff>0x167c</span><span style=color:#f92672>:</span> pop rdi
-  <span style=color:#ae81ff>0x168a</span><span style=color:#f92672>:</span> lea rsi, [rsi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0xffffffffffffffff</span>]
-  <span style=color:#ae81ff>0x1698</span><span style=color:#f92672>:</span> push rdi
-  <span style=color:#ae81ff>0x16a6</span><span style=color:#f92672>:</span> rdx, rsi <span style=color:#f92672>&lt;&lt;</span> <span style=color:#ae81ff>0x3</span>
-  <span style=color:#ae81ff>0x16b4</span><span style=color:#f92672>:</span> rsi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x1fa0</span>
-  <span style=color:#ae81ff>0x16c2</span><span style=color:#f92672>:</span> call <span style=color:#ae81ff>0x182e</span>
-  <span style=color:#ae81ff>0x16d0</span><span style=color:#f92672>:</span> pop rdi
-  <span style=color:#ae81ff>0x16de</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> rax
-  <span style=color:#ae81ff>0x16ec</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x1</span>
-  <span style=color:#ae81ff>0x16fa</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> r8 <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x1708</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x1716</span><span style=color:#f92672>:</span> ret
-  <span style=color:#ae81ff>0x1724</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rsi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x1732</span><span style=color:#f92672>:</span> lea rsi, [rsi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0xffffffffffffffff</span>]
-  <span style=color:#ae81ff>0x1740</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rsi <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x174e</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> qword [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x175c</span><span style=color:#f92672>:</span> r9 <span style=color:#f92672>=</span> qword [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x8</span>]
-  <span style=color:#ae81ff>0x176a</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> r9 <span style=color:#f92672>-</span> r8
-  <span style=color:#ae81ff>0x1778</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> r8 <span style=color:#f92672>^</span> rsi
-  <span style=color:#ae81ff>0x1786</span><span style=color:#f92672>:</span> r9 <span style=color:#f92672>=</span> r8 <span style=color:#f92672>*</span> r8
-  <span style=color:#ae81ff>0x1794</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> r9 <span style=color:#f92672>*</span> r8
-  <span style=color:#ae81ff>0x17a2</span><span style=color:#f92672>:</span> mov qword [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>], r8
-  <span style=color:#ae81ff>0x17b0</span><span style=color:#f92672>:</span> lea rdi, [rdi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x8</span>]
-  <span style=color:#ae81ff>0x17be</span><span style=color:#f92672>:</span> lea rsi, [rsi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0xffffffffffffffff</span>]
-  <span style=color:#ae81ff>0x17cc</span><span style=color:#f92672>:</span> rip <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x1740</span>
-  <span style=color:#ae81ff>0x17da</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x17e8</span><span style=color:#f92672>:</span> r10 <span style=color:#f92672>=</span> byte [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x17f6</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> r10 <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x1804</span><span style=color:#f92672>:</span> lea rdi, [rdi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x1</span>]
-  <span style=color:#ae81ff>0x1812</span><span style=color:#f92672>:</span> lea rax, [rax <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x1</span>]
-  <span style=color:#ae81ff>0x1820</span><span style=color:#f92672>:</span> rip <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x17e8</span>
-  <span style=color:#ae81ff>0x182e</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x183c</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rdx <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x184a</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> byte [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x1858</span><span style=color:#f92672>:</span> r9 <span style=color:#f92672>=</span> byte [rsi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x1866</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> r8 <span style=color:#f92672>^</span> r9
-  <span style=color:#ae81ff>0x1874</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> rax <span style=color:#f92672>|</span> r8
-  <span style=color:#ae81ff>0x1882</span><span style=color:#f92672>:</span> lea rdx, [rdx <span style=color:#f92672>+</span> <span style=color:#ae81ff>0xffffffffffffffff</span>]
-  <span style=color:#ae81ff>0x1890</span><span style=color:#f92672>:</span> lea rdi, [rdi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x1</span>]
-  <span style=color:#ae81ff>0x189e</span><span style=color:#f92672>:</span> lea rsi, [rsi <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x1</span>]
-  <span style=color:#ae81ff>0x18ac</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> rdx <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x184a</span>
-  <span style=color:#ae81ff>0x18ba</span><span style=color:#f92672>:</span> ret
-  <span style=color:#ae81ff>0x18c8</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> rdi
-  <span style=color:#ae81ff>0x18d6</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>=</span> byte [rax<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
-  <span style=color:#ae81ff>0x18e4</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> r8 <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span> jmp <span style=color:#ae81ff>0x192a</span>
-  <span style=color:#ae81ff>0x18f2</span><span style=color:#f92672>:</span> r8 <span style=color:#f92672>==</span> rsi ; r8 <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
-  <span style=color:#ae81ff>0x1900</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>if</span> r8 <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> ret
-  <span style=color:#ae81ff>0x190e</span><span style=color:#f92672>:</span> lea rax, [rax <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x1</span>]
-  <span style=color:#ae81ff>0x191c</span><span style=color:#f92672>:</span> rip <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x18d6</span>
-  <span style=color:#ae81ff>0x192a</span><span style=color:#f92672>:</span> rax <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0</span>
-  <span style=color:#ae81ff>0x1938</span><span style=color:#f92672>:</span> ret
+</code></pre></div><p>Now lets take a look at the actual disassembly of the vm</p><div class=collapsable-code><input id=2 type=checkbox checked>
+<label for=2><span class=collapsable-code__language>nasm</span>
+<span class=collapsable-code__title>vm disassembly</span>
+<span class=collapsable-code__toggle data-label-expand=△ data-label-collapse=▽></span></label><pre class=language-nasm><code>
+0x1190: rax = 0x2
+0x119e: rdi != 0x2 ; r8 = 1
+0x11ac: if r8 != 0 ret
+0x11ba: lea rsi, [rsi &#43; 0x8]
+0x11c8: rdi = qword [rsi&#43;0x0]
+0x11d6: rip = 0x11e4
+0x11e4: push rbp
+0x11f2: rbp = rsp
+0x1200: lea rsp, [rsp &#43; 0xfffffffffffffff0]
+0x120e: mov qword [rbp&#43;0xfffffffffffffff0], rdi
+0x121c: call 0x17da
+0x122a: rax != 0x24 ; rax = 1
+0x1238: if rax != 0 jmp 0x13ce
+0x1246: rdi = 0x20cd
+0x1254: call 0x17da
+0x1262: mov qword [rbp&#43;0xfffffffffffffff8], rax
+0x1270: rdi = qword [rbp&#43;0xfffffffffffffff0]
+0x127e: rsi = 0x20cd
+0x128c: rdx = rax
+0x129a: call 0x182e
+0x12a8: if rax != 0 jmp 0x13ce
+0x12b6: rdi = qword [rbp&#43;0xfffffffffffffff0]
+0x12c4: rsi = byte [rdi&#43;0x23]
+0x12d2: rsi != 0x7d ; rsi = 1
+0x12e0: if rsi != 0 jmp 0x13ce
+0x12ee: rsi = qword [rbp&#43;0xfffffffffffffff8]
+0x12fc: rdi = rdi &#43; rsi
+0x130a: rsi = -rsi
+0x1318: lea rsi, [rsi &#43; 0x23]
+0x1326: push rsi
+0x1334: call 0x1406
+0x1342: pop rsi
+0x1350: if rax = 0 jmp 0x13ce
+0x135e: rdi = rax
+0x136c: push rdi
+0x137a: call 0x15fe
+0x1388: pop rdi
+0x1396: push rax
+0x13a4: call 0x0
+0x13b2: pop rax
+0x13c0: rip = 0x13dc
+0x13ce: rax = 0x1
+0x13dc: rsp = rbp
+0x13ea: pop rbp
+0x13f8: ret
+0x1406: rax = 0x0
+0x1414: if rsi = 0 ret
+0x1422: push rdi
+0x1430: push rsi
+0x143e: rdi, rsi &lt;&lt; 0x3
+0x144c: call 0x0
+0x145a: pop rsi
+0x1468: pop rdi
+0x1476: if rax = 0 ret
+0x1484: r8 = rax
+0x1492: r9 = rax
+0x14a0: push r9
+0x14ae: push r8
+0x14bc: push rdi
+0x14ca: push rsi
+0x14d8: rsi = byte [rdi&#43;0x0]
+0x14e6: rdi = 0x20a0
+0x14f4: call 0x18c8
+0x1502: pop rsi
+0x1510: pop rdi
+0x151e: pop r8
+0x152c: pop r9
+0x153a: if rax = 0 jmp 0x15c6
+0x1548: r10 = 0x20a0
+0x1556: rax = rax - r10
+0x1564: mov qword [r9&#43;0x0], rax
+0x1572: lea r9, [r9 &#43; 0x8]
+0x1580: lea rdi, [rdi &#43; 0x1]
+0x158e: lea rsi, [rsi &#43; 0xffffffffffffffff]
+0x159c: if rsi != 0 jmp 0x14a0
+0x15aa: rax = r8
+0x15b8: ret
+0x15c6: rdi = r8
+0x15d4: call 0x0
+0x15e2: rax = 0x0
+0x15f0: ret
+0x15fe: rax = 0x1
+0x160c: if rsi = 0 ret
+0x161a: r8 = qword [rdi&#43;0x0]
+0x1628: r8 != 0x16 ; r8 = 1
+0x1636: if r8 != 0 ret
+0x1644: push rdi
+0x1652: push rsi
+0x1660: call 0x1724
+0x166e: pop rsi
+0x167c: pop rdi
+0x168a: lea rsi, [rsi &#43; 0xffffffffffffffff]
+0x1698: push rdi
+0x16a6: rdx, rsi &lt;&lt; 0x3
+0x16b4: rsi = 0x1fa0
+0x16c2: call 0x182e
+0x16d0: pop rdi
+0x16de: r8 = rax
+0x16ec: rax = 0x1
+0x16fa: if r8 != 0 ret
+0x1708: rax = 0x0
+0x1716: ret
+0x1724: if rsi = 0 ret
+0x1732: lea rsi, [rsi &#43; 0xffffffffffffffff]
+0x1740: if rsi = 0 ret
+0x174e: r8 = qword [rdi&#43;0x0]
+0x175c: r9 = qword [rdi&#43;0x8]
+0x176a: r8 = r9 - r8
+0x1778: r8 = r8 ^ rsi
+0x1786: r9 = r8 * r8
+0x1794: r8 = r9 * r8
+0x17a2: mov qword [rdi&#43;0x0], r8
+0x17b0: lea rdi, [rdi &#43; 0x8]
+0x17be: lea rsi, [rsi &#43; 0xffffffffffffffff]
+0x17cc: rip = 0x1740
+0x17da: rax = 0x0
+0x17e8: r10 = byte [rdi&#43;0x0]
+0x17f6: if r10 = 0 ret
+0x1804: lea rdi, [rdi &#43; 0x1]
+0x1812: lea rax, [rax &#43; 0x1]
+0x1820: rip = 0x17e8
+0x182e: rax = 0x0
+0x183c: if rdx = 0 ret
+0x184a: r8 = byte [rdi&#43;0x0]
+0x1858: r9 = byte [rsi&#43;0x0]
+0x1866: r8 = r8 ^ r9
+0x1874: rax = rax | r8
+0x1882: lea rdx, [rdx &#43; 0xffffffffffffffff]
+0x1890: lea rdi, [rdi &#43; 0x1]
+0x189e: lea rsi, [rsi &#43; 0x1]
+0x18ac: if rdx != 0 jmp 0x184a
+0x18ba: ret
+0x18c8: rax = rdi
+0x18d6: r8 = byte [rax&#43;0x0]
+0x18e4: if r8 = 0 jmp 0x192a
+0x18f2: r8 == rsi ; r8 = 1
+0x1900: if r8 != 0 ret
+0x190e: lea rax, [rax &#43; 0x1]
+0x191c: rip = 0x18d6
+0x192a: rax = 0x0
+0x1938: ret
 </code></pre></div><h2 id=flag-verification>Flag verification<a href=#flag-verification class=hanchor arialabel=Anchor>&#8983;</a></h2><p>The actual verification goes like this</p><ul><li>if argc != 2 ; returns</li><li>if input != len(flag) ; returns</li><li>if input doesn&rsquo;t start with <code>FLAG{</code> ; returns</li><li>if input doesn&rsquo;t end with <code>}</code> ; returns</li><li>if flag[0] != <code>x</code> ; returns</li><li>now it verifies our flag with a global array of and checks if the indices of flag are correct</li><li>now it compares it with a array at <code>0x1fa0</code> and if they are equal returns 0 and prints <code>OK!</code> if its correct or else it prints <code>Wrong</code></li></ul><p>To verify the indices of the flag of which is between 30 characters with the global array it uses this algorithm</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>iterates over <span style=color:#ae81ff>30</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>  times cause the len of the flag will be reduced <span style=color:#66d9ef>as</span> we already know the first character which <span style=color:#f92672>is</span> x 
 r8 <span style=color:#f92672>=</span> qword [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x0</span>]
 r9 <span style=color:#f92672>=</span> qword [rdi<span style=color:#f92672>+</span><span style=color:#ae81ff>0x8</span>]

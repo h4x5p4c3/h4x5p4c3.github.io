@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ret2libc on h4x5p4c3's blog</title><link>/tags/ret2libc/</link><description>Recent content in ret2libc on h4x5p4c3's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright ©️ 2021</copyright><lastBuildDate>Tue, 22 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/ret2libc/index.xml" rel="self" type="application/rss+xml"/><item><title>DUCTF-return-to-what</title><link>/posts/ductf-return-to-what/</link><pubDate>Tue, 22 Sep 2020 00:00:00 +0000</pubDate><guid>/posts/ductf-return-to-what/</guid><description>Leaking Libc addresses to do ret2libc with unknown libc First lets take a look at the binary mitigations
 {} ret2what checksec return-to-what [*] &amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and no canary which makes it easier and ASLR is probably enabled.
-Disassembly and Decompilation pwndbg&amp;gt; disassemble main Dump of assembler code for function main: 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp # prologue 0x00000000004011b1 &amp;lt;+4&amp;gt;: lea rdi,[rip+0xe78] # rdi = address of [rip+0xe78] 0x00000000004011b8 &amp;lt;+11&amp;gt;: call 0x401030 &amp;lt;puts@plt&amp;gt; # call puts function 0x00000000004011bd &amp;lt;+16&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011c2 &amp;lt;+21&amp;gt;: call 0x401185 &amp;lt;vuln&amp;gt; # call vuln function which has the vulnerable gets function which we use to do bof 0x00000000004011c7 &amp;lt;+26&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011cc &amp;lt;+31&amp;gt;: pop rbp # epilogue 0x00000000004011cd &amp;lt;+32&amp;gt;: ret End of assembler dump.</description><content>&lt;h2 id="leaking-libc-addresses-to-do-ret2libc-with-unknown-libc">Leaking Libc addresses to do ret2libc with unknown libc&lt;/h2>
+Decompilation and Disassembly The decompilation of the assembly code looks like this</description><content>&lt;h2 id="leaking-libc-addresses-to-do-ret2libc-with-unknown-libc">Leaking Libc addresses to do ret2libc with unknown libc&lt;/h2>
 &lt;p>First lets take a look at the binary mitigations&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
@@ -11,8 +11,16 @@ NX: NX enabled
 PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="color:#f92672">)&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and
 no canary which makes it easier and ASLR is probably enabled.&lt;/p>
-&lt;h2 id="disassembly-and-decompilation">Disassembly and Decompilation&lt;/h2>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
+&lt;h2 id="decompilation-and-disassembly">Decompilation and Disassembly&lt;/h2>
+&lt;p>The decompilation of the assembly code looks like this&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+undefined8 main&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">{&lt;/span>
+puts&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Today, we\&amp;#39;ll have a lesson in returns.&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>;
+vuln&lt;span style="color:#f92672">()&lt;/span>;
+&lt;span style="color:#66d9ef">return&lt;/span> 0;
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
 Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#66d9ef">function&lt;/span> main:
 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp
 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp &lt;span style="color:#75715e"># prologue&lt;/span>
@@ -24,14 +32,6 @@ Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span sty
 0x00000000004011cc &amp;lt;+31&amp;gt;: pop rbp &lt;span style="color:#75715e"># epilogue&lt;/span>
 0x00000000004011cd &amp;lt;+32&amp;gt;: ret
 End of assembler dump.
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>The decompilation of the assembly code looks like this&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
-undefined8 main&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
-&lt;span style="color:#f92672">{&lt;/span>
-puts&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Today, we\&amp;#39;ll have a lesson in returns.&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>;
-vuln&lt;span style="color:#f92672">()&lt;/span>;
-&lt;span style="color:#66d9ef">return&lt;/span> 0;
-&lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>In addition lets take a look at the &lt;code>vuln&lt;/code> function too&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 void vuln&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>

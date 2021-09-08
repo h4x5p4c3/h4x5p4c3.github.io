@@ -244,220 +244,240 @@ Reading symbols from hell86...
 (No debugging symbols found in hell86)
 gef&lt;span style="color:#960050;background-color:#1e0010">➤&lt;/span> dump binary memory flag_func &lt;span style="color:#ae81ff">0x1190&lt;/span> &lt;span style="color:#ae81ff">0x1946&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>As it was my first time creating a diassembler i got some help from a previously made disassembler.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
-&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">disassemble&lt;/span>(instructions):
-registers &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;r8&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r9&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r10&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r11&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r12&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r13&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r14&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r15&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rdi&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rsi&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;rbp&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rbx&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rdx&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rax&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rcx&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rsp&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rip&amp;#39;&lt;/span>]
-asm_instr &lt;span style="color:#f92672">=&lt;/span> [
-&lt;span style="color:#e6db74">&amp;#39;nop&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># no operation&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> + &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># addition&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> - &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># subtract&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> * &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># multiply&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> / &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># division (quotient)&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> % &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># division (reminder)&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;gt;&amp;gt; &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># right shift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;lt;&amp;lt; &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># left shift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = -&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># negation&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># mov a, b&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = byte [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = byte [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = word [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = word [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = dword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movzx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = dword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># movsx&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = qword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># mov&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;mov byte [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;mov word [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;mov dword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;mov qword [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">+0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">], &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;push &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;push 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;pop &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> | &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;amp; &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> ^ &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = ~ &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;cmp.s &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># smaller&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.se &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># smaller or equal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.g &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># greater&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.ge &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;#39;&lt;/span>, &lt;span style="color:#75715e"># greater or equal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> == &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74"> ; &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = 1&amp;#39;&lt;/span>, &lt;span style="color:#75715e">#equal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.in &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{3:s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e">#inequal&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.eq &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74">, 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># if equal to const&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> != 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74"> ; &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = 1&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># if inequal to const&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;cmp.z &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> ; &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74"> = &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> == 0 &amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> = 0 jmp 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> != 0 jmp 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;call 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;ret&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> != 0 ret&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;if &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> = 0 ret&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;lea &lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, [&lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> + 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">]&amp;#39;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;gt;&amp;gt; 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># rshift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;lt;&amp;lt; 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># lshift&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> | 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># or&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> &amp;amp; 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#75715e"># and&lt;/span>
-&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{1:s}&lt;/span>&lt;span style="color:#e6db74">, &lt;/span>&lt;span style="color:#e6db74">{2:s}&lt;/span>&lt;span style="color:#e6db74"> ^ 0x&lt;/span>&lt;span style="color:#e6db74">{0:x}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span> &lt;span style="color:#75715e"># xor&lt;/span>
+&lt;div class="collapsable-code">
+&lt;input id="1" type="checkbox" checked />
+&lt;label for="1">
+&lt;span class="collapsable-code__language">python&lt;/span>
+&lt;span class="collapsable-code__title">vm disassembler&lt;/span>
+&lt;span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽">&lt;/span>
+&lt;/label>
+&lt;pre class="language-python" >&lt;code>
+#!/usr/bin/env python3
+def disassemble(instructions):
+registers = [&amp;#39;r8&amp;#39;, &amp;#39;r9&amp;#39;, &amp;#39;r10&amp;#39;, &amp;#39;r11&amp;#39;, &amp;#39;r12&amp;#39;, &amp;#39;r13&amp;#39;, &amp;#39;r14&amp;#39;, &amp;#39;r15&amp;#39;, &amp;#39;rdi&amp;#39;, &amp;#39;rsi&amp;#39;,
+&amp;#39;rbp&amp;#39;, &amp;#39;rbx&amp;#39;, &amp;#39;rdx&amp;#39;, &amp;#39;rax&amp;#39;, &amp;#39;rcx&amp;#39;, &amp;#39;rsp&amp;#39;, &amp;#39;rip&amp;#39;]
+asm_instr = [
+&amp;#39;nop&amp;#39;, # no operation
+&amp;#39;{1:s} = {2:s} &amp;#43; {3:s}&amp;#39;, # addition
+&amp;#39;{1:s} = {2:s} - {3:s}&amp;#39;, # subtract
+&amp;#39;{1:s} = {2:s} * {3:s}&amp;#39;, # multiply
+&amp;#39;{1:s} = {2:s} / {3:s}&amp;#39;, # division (quotient)
+&amp;#39;{1:s} = {2:s} % {3:s}&amp;#39;, # division (reminder)
+&amp;#39;{1:s} = {2:s} &amp;gt;&amp;gt; {3:s}&amp;#39;, # right shift
+&amp;#39;{1:s} = {2:s} &amp;lt;&amp;lt; {3:s}&amp;#39;, # left shift
+&amp;#39;{1:s} = -{2:s}&amp;#39;, # negation
+&amp;#39;{1:s} = 0x{0:x}&amp;#39;, # mov a, b
+&amp;#39;{1:s} = byte [{2:s}&amp;#43;0x{0:x}]&amp;#39;, # movzx
+&amp;#39;{1:s} = byte [{2:s}&amp;#43;0x{0:x}]&amp;#39;, # movsx
+&amp;#39;{1:s} = word [{2:s}&amp;#43;0x{0:x}]&amp;#39;, # movzx
+&amp;#39;{1:s} = word [{2:s}&amp;#43;0x{0:x}]&amp;#39;, # movsx
+&amp;#39;{1:s} = dword [{2:s}&amp;#43;0x{0:x}]&amp;#39;, # movzx
+&amp;#39;{1:s} = dword [{2:s}&amp;#43;0x{0:x}]&amp;#39;, # movsx
+&amp;#39;{1:s} = qword [{2:s}&amp;#43;0x{0:x}]&amp;#39;, # mov
+&amp;#39;mov byte [{2:s}&amp;#43;0x{0:x}], {3:s}&amp;#39;,
+&amp;#39;mov word [{2:s}&amp;#43;0x{0:x}], {3:s}&amp;#39;,
+&amp;#39;mov dword [{2:s}&amp;#43;0x{0:x}], {3:s}&amp;#39;,
+&amp;#39;mov qword [{2:s}&amp;#43;0x{0:x}], {3:s}&amp;#39;,
+&amp;#39;push {2:s}&amp;#39;,
+&amp;#39;push 0x{0:x}&amp;#39;,
+&amp;#39;pop {1:s}&amp;#39;,
+&amp;#39;{1:s} = {2:s}&amp;#39;,
+&amp;#39;{1:s} = {2:s} | {3:s}&amp;#39;,
+&amp;#39;{1:s} = {2:s} &amp;amp; {3:s}&amp;#39;,
+&amp;#39;{1:s} = {2:s} ^ {3:s}&amp;#39;,
+&amp;#39;{1:s} = ~ {2:s}&amp;#39;,
+&amp;#39;cmp.s {1:s}, {2:s}, {3:s}&amp;#39;, # smaller
+&amp;#39;cmp.se {1:s}, {2:s}, {3:s}&amp;#39;, # smaller or equal
+&amp;#39;cmp.g {1:s}, {2:s}, {3:s}&amp;#39;, # greater
+&amp;#39;cmp.ge {1:s}, {2:s}, {3:s} &amp;#39;, # greater or equal
+&amp;#39;{1:s} == {3:s} ; {1:s} = 1&amp;#39;, #equal
+&amp;#39;cmp.in {1:s}, {2:s}, {3:s}&amp;#39;, #inequal
+&amp;#39;cmp.eq {1:s}, {2:s}, 0x{0:x}&amp;#39;, # if equal to const
+&amp;#39;{2:s} != 0x{0:x} ; {1:s} = 1&amp;#39;, # if inequal to const
+&amp;#39;cmp.z {1:s}, {2:s} ; {1:s} = {2:s} == 0 &amp;#39;,
+&amp;#39;if {2:s} = 0 jmp 0x{0:x}&amp;#39;,
+&amp;#39;if {2:s} != 0 jmp 0x{0:x}&amp;#39;,
+&amp;#39;call 0x{0:x}&amp;#39;,
+&amp;#39;ret&amp;#39;,
+&amp;#39;if {2:s} != 0 ret&amp;#39;,
+&amp;#39;if {2:s} = 0 ret&amp;#39;,
+&amp;#39;lea {1:s}, [{2:s} &amp;#43; 0x{0:x}]&amp;#39;,
+&amp;#39;{1:s}, {2:s} &amp;gt;&amp;gt; 0x{0:x}&amp;#39;, # rshift
+&amp;#39;{1:s}, {2:s} &amp;lt;&amp;lt; 0x{0:x}&amp;#39;, # lshift
+&amp;#39;{1:s}, {2:s} | 0x{0:x}&amp;#39;, # or
+&amp;#39;{1:s}, {2:s} &amp;amp; 0x{0:x}&amp;#39;, # and
+&amp;#39;{1:s}, {2:s} ^ 0x{0:x}&amp;#39; # xor
 ]
-&lt;span style="color:#75715e">#print(len(assembly_mapping))&lt;/span>
-addr &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x1190&lt;/span>
-&lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#f92672">in&lt;/span> instructions:
-print(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{:&amp;gt;10s}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(&lt;span style="color:#e6db74">&amp;#39;0x&lt;/span>&lt;span style="color:#e6db74">{:x}&lt;/span>&lt;span style="color:#e6db74">: &amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(addr)), end&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>)
-instr &lt;span style="color:#f92672">=&lt;/span> int&lt;span style="color:#f92672">.&lt;/span>from_bytes(i[&lt;span style="color:#ae81ff">2&lt;/span>:&lt;span style="color:#ae81ff">10&lt;/span>], byteorder&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;little&amp;#39;&lt;/span>)
-opcode &lt;span style="color:#f92672">=&lt;/span> i[&lt;span style="color:#ae81ff">10&lt;/span>]
-arg1 &lt;span style="color:#f92672">=&lt;/span> registers[i[&lt;span style="color:#ae81ff">11&lt;/span>]]
-arg2 &lt;span style="color:#f92672">=&lt;/span> registers[i[&lt;span style="color:#ae81ff">12&lt;/span>]]
-arg3 &lt;span style="color:#f92672">=&lt;/span> registers[i[&lt;span style="color:#ae81ff">13&lt;/span>]]
-print(asm_instr[opcode]&lt;span style="color:#f92672">.&lt;/span>format(instr, arg1, arg2, arg3))
-addr &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#ae81ff">14&lt;/span>
-&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;flag_func&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;rb&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
-flag_func &lt;span style="color:#f92672">=&lt;/span> f&lt;span style="color:#f92672">.&lt;/span>read()
-instructions &lt;span style="color:#f92672">=&lt;/span> [flag_func[i&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#ae81ff">14&lt;/span>:(i&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>)&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#ae81ff">14&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#f92672">in&lt;/span> range(len(flag_func)&lt;span style="color:#f92672">//&lt;/span>&lt;span style="color:#ae81ff">14&lt;/span>)]
+#print(len(assembly_mapping))
+addr = 0x1190
+for i in instructions:
+print(&amp;#39;{:&amp;gt;10s}&amp;#39;.format(&amp;#39;0x{:x}: &amp;#39;.format(addr)), end=&amp;#39;&amp;#39;)
+instr = int.from_bytes(i[2:10], byteorder=&amp;#39;little&amp;#39;)
+opcode = i[10]
+arg1 = registers[i[11]]
+arg2 = registers[i[12]]
+arg3 = registers[i[13]]
+print(asm_instr[opcode].format(instr, arg1, arg2, arg3))
+addr &amp;#43;= 14
+with open(&amp;#39;flag_func&amp;#39;, &amp;#39;rb&amp;#39;) as f:
+flag_func = f.read()
+instructions = [flag_func[i*14:(i&amp;#43;1)*14] for i in range(len(flag_func)//14)]
 disassemble(instructions)
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now lets take a look at the actual disassembly of the vm&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp"> &lt;span style="color:#ae81ff">0x1190&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x2&lt;/span>
-&lt;span style="color:#ae81ff">0x119e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0x2&lt;/span> ; r8 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#ae81ff">0x11ac&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> r8 &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x11ba&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x8&lt;/span>]
-&lt;span style="color:#ae81ff">0x11c8&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> qword [rsi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x11d6&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rip &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x11e4&lt;/span>
-&lt;span style="color:#ae81ff">0x11e4&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rbp
-&lt;span style="color:#ae81ff">0x11f2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rbp &lt;span style="color:#f92672">=&lt;/span> rsp
-&lt;span style="color:#ae81ff">0x1200&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsp, [rsp &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xfffffffffffffff0&lt;/span>]
-&lt;span style="color:#ae81ff">0x120e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> mov qword [rbp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0xfffffffffffffff0&lt;/span>], rdi
-&lt;span style="color:#ae81ff">0x121c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x17da&lt;/span>
-&lt;span style="color:#ae81ff">0x122a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0x24&lt;/span> ; rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#ae81ff">0x1238&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rax &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x13ce&lt;/span>
-&lt;span style="color:#ae81ff">0x1246&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x20cd&lt;/span>
-&lt;span style="color:#ae81ff">0x1254&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x17da&lt;/span>
-&lt;span style="color:#ae81ff">0x1262&lt;/span>&lt;span style="color:#f92672">:&lt;/span> mov qword [rbp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0xfffffffffffffff8&lt;/span>], rax
-&lt;span style="color:#ae81ff">0x1270&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> qword [rbp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0xfffffffffffffff0&lt;/span>]
-&lt;span style="color:#ae81ff">0x127e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x20cd&lt;/span>
-&lt;span style="color:#ae81ff">0x128c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdx &lt;span style="color:#f92672">=&lt;/span> rax
-&lt;span style="color:#ae81ff">0x129a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x182e&lt;/span>
-&lt;span style="color:#ae81ff">0x12a8&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rax &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x13ce&lt;/span>
-&lt;span style="color:#ae81ff">0x12b6&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> qword [rbp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0xfffffffffffffff0&lt;/span>]
-&lt;span style="color:#ae81ff">0x12c4&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> byte [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x23&lt;/span>]
-&lt;span style="color:#ae81ff">0x12d2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsi &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0x7d&lt;/span> ; rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#ae81ff">0x12e0&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rsi &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x13ce&lt;/span>
-&lt;span style="color:#ae81ff">0x12ee&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> qword [rbp&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0xfffffffffffffff8&lt;/span>]
-&lt;span style="color:#ae81ff">0x12fc&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> rdi &lt;span style="color:#f92672">+&lt;/span> rsi
-&lt;span style="color:#ae81ff">0x130a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>rsi
-&lt;span style="color:#ae81ff">0x1318&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x23&lt;/span>]
-&lt;span style="color:#ae81ff">0x1326&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rsi
-&lt;span style="color:#ae81ff">0x1334&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x1406&lt;/span>
-&lt;span style="color:#ae81ff">0x1342&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rsi
-&lt;span style="color:#ae81ff">0x1350&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x13ce&lt;/span>
-&lt;span style="color:#ae81ff">0x135e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> rax
-&lt;span style="color:#ae81ff">0x136c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rdi
-&lt;span style="color:#ae81ff">0x137a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x15fe&lt;/span>
-&lt;span style="color:#ae81ff">0x1388&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rdi
-&lt;span style="color:#ae81ff">0x1396&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rax
-&lt;span style="color:#ae81ff">0x13a4&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x13b2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rax
-&lt;span style="color:#ae81ff">0x13c0&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rip &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x13dc&lt;/span>
-&lt;span style="color:#ae81ff">0x13ce&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>
-&lt;span style="color:#ae81ff">0x13dc&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsp &lt;span style="color:#f92672">=&lt;/span> rbp
-&lt;span style="color:#ae81ff">0x13ea&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rbp
-&lt;span style="color:#ae81ff">0x13f8&lt;/span>&lt;span style="color:#f92672">:&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1406&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x1414&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1422&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rdi
-&lt;span style="color:#ae81ff">0x1430&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rsi
-&lt;span style="color:#ae81ff">0x143e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi, rsi &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">0x3&lt;/span>
-&lt;span style="color:#ae81ff">0x144c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x145a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rsi
-&lt;span style="color:#ae81ff">0x1468&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rdi
-&lt;span style="color:#ae81ff">0x1476&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1484&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> rax
-&lt;span style="color:#ae81ff">0x1492&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r9 &lt;span style="color:#f92672">=&lt;/span> rax
-&lt;span style="color:#ae81ff">0x14a0&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push r9
-&lt;span style="color:#ae81ff">0x14ae&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push r8
-&lt;span style="color:#ae81ff">0x14bc&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rdi
-&lt;span style="color:#ae81ff">0x14ca&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rsi
-&lt;span style="color:#ae81ff">0x14d8&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> byte [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x14e6&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x20a0&lt;/span>
-&lt;span style="color:#ae81ff">0x14f4&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x18c8&lt;/span>
-&lt;span style="color:#ae81ff">0x1502&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rsi
-&lt;span style="color:#ae81ff">0x1510&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rdi
-&lt;span style="color:#ae81ff">0x151e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop r8
-&lt;span style="color:#ae81ff">0x152c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop r9
-&lt;span style="color:#ae81ff">0x153a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x15c6&lt;/span>
-&lt;span style="color:#ae81ff">0x1548&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r10 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x20a0&lt;/span>
-&lt;span style="color:#ae81ff">0x1556&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> rax &lt;span style="color:#f92672">-&lt;/span> r10
-&lt;span style="color:#ae81ff">0x1564&lt;/span>&lt;span style="color:#f92672">:&lt;/span> mov qword [r9&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>], rax
-&lt;span style="color:#ae81ff">0x1572&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea r9, [r9 &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x8&lt;/span>]
-&lt;span style="color:#ae81ff">0x1580&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rdi, [rdi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>]
-&lt;span style="color:#ae81ff">0x158e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xffffffffffffffff&lt;/span>]
-&lt;span style="color:#ae81ff">0x159c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rsi &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x14a0&lt;/span>
-&lt;span style="color:#ae81ff">0x15aa&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> r8
-&lt;span style="color:#ae81ff">0x15b8&lt;/span>&lt;span style="color:#f92672">:&lt;/span> ret
-&lt;span style="color:#ae81ff">0x15c6&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdi &lt;span style="color:#f92672">=&lt;/span> r8
-&lt;span style="color:#ae81ff">0x15d4&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x15e2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x15f0&lt;/span>&lt;span style="color:#f92672">:&lt;/span> ret
-&lt;span style="color:#ae81ff">0x15fe&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>
-&lt;span style="color:#ae81ff">0x160c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x161a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> qword [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x1628&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0x16&lt;/span> ; r8 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#ae81ff">0x1636&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> r8 &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1644&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rdi
-&lt;span style="color:#ae81ff">0x1652&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rsi
-&lt;span style="color:#ae81ff">0x1660&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x1724&lt;/span>
-&lt;span style="color:#ae81ff">0x166e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rsi
-&lt;span style="color:#ae81ff">0x167c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rdi
-&lt;span style="color:#ae81ff">0x168a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xffffffffffffffff&lt;/span>]
-&lt;span style="color:#ae81ff">0x1698&lt;/span>&lt;span style="color:#f92672">:&lt;/span> push rdi
-&lt;span style="color:#ae81ff">0x16a6&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rdx, rsi &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">0x3&lt;/span>
-&lt;span style="color:#ae81ff">0x16b4&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x1fa0&lt;/span>
-&lt;span style="color:#ae81ff">0x16c2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> call &lt;span style="color:#ae81ff">0x182e&lt;/span>
-&lt;span style="color:#ae81ff">0x16d0&lt;/span>&lt;span style="color:#f92672">:&lt;/span> pop rdi
-&lt;span style="color:#ae81ff">0x16de&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> rax
-&lt;span style="color:#ae81ff">0x16ec&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>
-&lt;span style="color:#ae81ff">0x16fa&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> r8 &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1708&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x1716&lt;/span>&lt;span style="color:#f92672">:&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1724&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1732&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xffffffffffffffff&lt;/span>]
-&lt;span style="color:#ae81ff">0x1740&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rsi &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x174e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> qword [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x175c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r9 &lt;span style="color:#f92672">=&lt;/span> qword [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x8&lt;/span>]
-&lt;span style="color:#ae81ff">0x176a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> r9 &lt;span style="color:#f92672">-&lt;/span> r8
-&lt;span style="color:#ae81ff">0x1778&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> r8 &lt;span style="color:#f92672">^&lt;/span> rsi
-&lt;span style="color:#ae81ff">0x1786&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r9 &lt;span style="color:#f92672">=&lt;/span> r8 &lt;span style="color:#f92672">*&lt;/span> r8
-&lt;span style="color:#ae81ff">0x1794&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> r9 &lt;span style="color:#f92672">*&lt;/span> r8
-&lt;span style="color:#ae81ff">0x17a2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> mov qword [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>], r8
-&lt;span style="color:#ae81ff">0x17b0&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rdi, [rdi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x8&lt;/span>]
-&lt;span style="color:#ae81ff">0x17be&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xffffffffffffffff&lt;/span>]
-&lt;span style="color:#ae81ff">0x17cc&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rip &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x1740&lt;/span>
-&lt;span style="color:#ae81ff">0x17da&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x17e8&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r10 &lt;span style="color:#f92672">=&lt;/span> byte [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x17f6&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> r10 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x1804&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rdi, [rdi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>]
-&lt;span style="color:#ae81ff">0x1812&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rax, [rax &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>]
-&lt;span style="color:#ae81ff">0x1820&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rip &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x17e8&lt;/span>
-&lt;span style="color:#ae81ff">0x182e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x183c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rdx &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x184a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> byte [rdi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x1858&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r9 &lt;span style="color:#f92672">=&lt;/span> byte [rsi&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x1866&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> r8 &lt;span style="color:#f92672">^&lt;/span> r9
-&lt;span style="color:#ae81ff">0x1874&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> rax &lt;span style="color:#f92672">|&lt;/span> r8
-&lt;span style="color:#ae81ff">0x1882&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rdx, [rdx &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0xffffffffffffffff&lt;/span>]
-&lt;span style="color:#ae81ff">0x1890&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rdi, [rdi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>]
-&lt;span style="color:#ae81ff">0x189e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rsi, [rsi &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>]
-&lt;span style="color:#ae81ff">0x18ac&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> rdx &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x184a&lt;/span>
-&lt;span style="color:#ae81ff">0x18ba&lt;/span>&lt;span style="color:#f92672">:&lt;/span> ret
-&lt;span style="color:#ae81ff">0x18c8&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> rdi
-&lt;span style="color:#ae81ff">0x18d6&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> byte [rax&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#ae81ff">0x0&lt;/span>]
-&lt;span style="color:#ae81ff">0x18e4&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> r8 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> jmp &lt;span style="color:#ae81ff">0x192a&lt;/span>
-&lt;span style="color:#ae81ff">0x18f2&lt;/span>&lt;span style="color:#f92672">:&lt;/span> r8 &lt;span style="color:#f92672">==&lt;/span> rsi ; r8 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#ae81ff">0x1900&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> r8 &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> ret
-&lt;span style="color:#ae81ff">0x190e&lt;/span>&lt;span style="color:#f92672">:&lt;/span> lea rax, [rax &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">0x1&lt;/span>]
-&lt;span style="color:#ae81ff">0x191c&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rip &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x18d6&lt;/span>
-&lt;span style="color:#ae81ff">0x192a&lt;/span>&lt;span style="color:#f92672">:&lt;/span> rax &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x0&lt;/span>
-&lt;span style="color:#ae81ff">0x1938&lt;/span>&lt;span style="color:#f92672">:&lt;/span> ret
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="flag-verification">Flag verification&lt;/h2>
+&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;p>Now lets take a look at the actual disassembly of the vm&lt;/p>
+&lt;div class="collapsable-code">
+&lt;input id="2" type="checkbox" checked />
+&lt;label for="2">
+&lt;span class="collapsable-code__language">nasm&lt;/span>
+&lt;span class="collapsable-code__title">vm disassembly&lt;/span>
+&lt;span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽">&lt;/span>
+&lt;/label>
+&lt;pre class="language-nasm" >&lt;code>
+0x1190: rax = 0x2
+0x119e: rdi != 0x2 ; r8 = 1
+0x11ac: if r8 != 0 ret
+0x11ba: lea rsi, [rsi &amp;#43; 0x8]
+0x11c8: rdi = qword [rsi&amp;#43;0x0]
+0x11d6: rip = 0x11e4
+0x11e4: push rbp
+0x11f2: rbp = rsp
+0x1200: lea rsp, [rsp &amp;#43; 0xfffffffffffffff0]
+0x120e: mov qword [rbp&amp;#43;0xfffffffffffffff0], rdi
+0x121c: call 0x17da
+0x122a: rax != 0x24 ; rax = 1
+0x1238: if rax != 0 jmp 0x13ce
+0x1246: rdi = 0x20cd
+0x1254: call 0x17da
+0x1262: mov qword [rbp&amp;#43;0xfffffffffffffff8], rax
+0x1270: rdi = qword [rbp&amp;#43;0xfffffffffffffff0]
+0x127e: rsi = 0x20cd
+0x128c: rdx = rax
+0x129a: call 0x182e
+0x12a8: if rax != 0 jmp 0x13ce
+0x12b6: rdi = qword [rbp&amp;#43;0xfffffffffffffff0]
+0x12c4: rsi = byte [rdi&amp;#43;0x23]
+0x12d2: rsi != 0x7d ; rsi = 1
+0x12e0: if rsi != 0 jmp 0x13ce
+0x12ee: rsi = qword [rbp&amp;#43;0xfffffffffffffff8]
+0x12fc: rdi = rdi &amp;#43; rsi
+0x130a: rsi = -rsi
+0x1318: lea rsi, [rsi &amp;#43; 0x23]
+0x1326: push rsi
+0x1334: call 0x1406
+0x1342: pop rsi
+0x1350: if rax = 0 jmp 0x13ce
+0x135e: rdi = rax
+0x136c: push rdi
+0x137a: call 0x15fe
+0x1388: pop rdi
+0x1396: push rax
+0x13a4: call 0x0
+0x13b2: pop rax
+0x13c0: rip = 0x13dc
+0x13ce: rax = 0x1
+0x13dc: rsp = rbp
+0x13ea: pop rbp
+0x13f8: ret
+0x1406: rax = 0x0
+0x1414: if rsi = 0 ret
+0x1422: push rdi
+0x1430: push rsi
+0x143e: rdi, rsi &amp;lt;&amp;lt; 0x3
+0x144c: call 0x0
+0x145a: pop rsi
+0x1468: pop rdi
+0x1476: if rax = 0 ret
+0x1484: r8 = rax
+0x1492: r9 = rax
+0x14a0: push r9
+0x14ae: push r8
+0x14bc: push rdi
+0x14ca: push rsi
+0x14d8: rsi = byte [rdi&amp;#43;0x0]
+0x14e6: rdi = 0x20a0
+0x14f4: call 0x18c8
+0x1502: pop rsi
+0x1510: pop rdi
+0x151e: pop r8
+0x152c: pop r9
+0x153a: if rax = 0 jmp 0x15c6
+0x1548: r10 = 0x20a0
+0x1556: rax = rax - r10
+0x1564: mov qword [r9&amp;#43;0x0], rax
+0x1572: lea r9, [r9 &amp;#43; 0x8]
+0x1580: lea rdi, [rdi &amp;#43; 0x1]
+0x158e: lea rsi, [rsi &amp;#43; 0xffffffffffffffff]
+0x159c: if rsi != 0 jmp 0x14a0
+0x15aa: rax = r8
+0x15b8: ret
+0x15c6: rdi = r8
+0x15d4: call 0x0
+0x15e2: rax = 0x0
+0x15f0: ret
+0x15fe: rax = 0x1
+0x160c: if rsi = 0 ret
+0x161a: r8 = qword [rdi&amp;#43;0x0]
+0x1628: r8 != 0x16 ; r8 = 1
+0x1636: if r8 != 0 ret
+0x1644: push rdi
+0x1652: push rsi
+0x1660: call 0x1724
+0x166e: pop rsi
+0x167c: pop rdi
+0x168a: lea rsi, [rsi &amp;#43; 0xffffffffffffffff]
+0x1698: push rdi
+0x16a6: rdx, rsi &amp;lt;&amp;lt; 0x3
+0x16b4: rsi = 0x1fa0
+0x16c2: call 0x182e
+0x16d0: pop rdi
+0x16de: r8 = rax
+0x16ec: rax = 0x1
+0x16fa: if r8 != 0 ret
+0x1708: rax = 0x0
+0x1716: ret
+0x1724: if rsi = 0 ret
+0x1732: lea rsi, [rsi &amp;#43; 0xffffffffffffffff]
+0x1740: if rsi = 0 ret
+0x174e: r8 = qword [rdi&amp;#43;0x0]
+0x175c: r9 = qword [rdi&amp;#43;0x8]
+0x176a: r8 = r9 - r8
+0x1778: r8 = r8 ^ rsi
+0x1786: r9 = r8 * r8
+0x1794: r8 = r9 * r8
+0x17a2: mov qword [rdi&amp;#43;0x0], r8
+0x17b0: lea rdi, [rdi &amp;#43; 0x8]
+0x17be: lea rsi, [rsi &amp;#43; 0xffffffffffffffff]
+0x17cc: rip = 0x1740
+0x17da: rax = 0x0
+0x17e8: r10 = byte [rdi&amp;#43;0x0]
+0x17f6: if r10 = 0 ret
+0x1804: lea rdi, [rdi &amp;#43; 0x1]
+0x1812: lea rax, [rax &amp;#43; 0x1]
+0x1820: rip = 0x17e8
+0x182e: rax = 0x0
+0x183c: if rdx = 0 ret
+0x184a: r8 = byte [rdi&amp;#43;0x0]
+0x1858: r9 = byte [rsi&amp;#43;0x0]
+0x1866: r8 = r8 ^ r9
+0x1874: rax = rax | r8
+0x1882: lea rdx, [rdx &amp;#43; 0xffffffffffffffff]
+0x1890: lea rdi, [rdi &amp;#43; 0x1]
+0x189e: lea rsi, [rsi &amp;#43; 0x1]
+0x18ac: if rdx != 0 jmp 0x184a
+0x18ba: ret
+0x18c8: rax = rdi
+0x18d6: r8 = byte [rax&amp;#43;0x0]
+0x18e4: if r8 = 0 jmp 0x192a
+0x18f2: r8 == rsi ; r8 = 1
+0x1900: if r8 != 0 ret
+0x190e: lea rax, [rax &amp;#43; 0x1]
+0x191c: rip = 0x18d6
+0x192a: rax = 0x0
+0x1938: ret
+&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;h2 id="flag-verification">Flag verification&lt;/h2>
 &lt;p>The actual verification goes like this&lt;/p>
 &lt;ul>
 &lt;li>if argc != 2 ; returns&lt;/li>
@@ -517,7 +537,7 @@ OK&lt;span style="color:#960050;background-color:#1e0010">!&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>That was an awesome crackme
 &lt;img src="/images/wll_done.gif" alt="">&lt;/p></content></item><item><title>DUCTF-return-to-what</title><link>/posts/ductf-return-to-what/</link><pubDate>Tue, 22 Sep 2020 00:00:00 +0000</pubDate><guid>/posts/ductf-return-to-what/</guid><description>Leaking Libc addresses to do ret2libc with unknown libc First lets take a look at the binary mitigations
 {} ret2what checksec return-to-what [*] &amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and no canary which makes it easier and ASLR is probably enabled.
-Disassembly and Decompilation pwndbg&amp;gt; disassemble main Dump of assembler code for function main: 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp # prologue 0x00000000004011b1 &amp;lt;+4&amp;gt;: lea rdi,[rip+0xe78] # rdi = address of [rip+0xe78] 0x00000000004011b8 &amp;lt;+11&amp;gt;: call 0x401030 &amp;lt;puts@plt&amp;gt; # call puts function 0x00000000004011bd &amp;lt;+16&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011c2 &amp;lt;+21&amp;gt;: call 0x401185 &amp;lt;vuln&amp;gt; # call vuln function which has the vulnerable gets function which we use to do bof 0x00000000004011c7 &amp;lt;+26&amp;gt;: mov eax,0x0 # eax = 0x0 0x00000000004011cc &amp;lt;+31&amp;gt;: pop rbp # epilogue 0x00000000004011cd &amp;lt;+32&amp;gt;: ret End of assembler dump.</description><content>&lt;h2 id="leaking-libc-addresses-to-do-ret2libc-with-unknown-libc">Leaking Libc addresses to do ret2libc with unknown libc&lt;/h2>
+Decompilation and Disassembly The decompilation of the assembly code looks like this</description><content>&lt;h2 id="leaking-libc-addresses-to-do-ret2libc-with-unknown-libc">Leaking Libc addresses to do ret2libc with unknown libc&lt;/h2>
 &lt;p>First lets take a look at the binary mitigations&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">{}&lt;/span> ret2what checksec &lt;span style="color:#66d9ef">return&lt;/span>-to-what
 &lt;span style="color:#f92672">[&lt;/span>*&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/home/h4x5p4c3/Downloads/ret2what/return-to-what&amp;#39;&lt;/span>
@@ -528,8 +548,16 @@ NX: NX enabled
 PIE: No PIE &lt;span style="color:#f92672">(&lt;/span>0x400000&lt;span style="color:#f92672">)&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Nx is enabled so we can&amp;rsquo;t do a bof and place our shellcode to get a shell and
 no canary which makes it easier and ASLR is probably enabled.&lt;/p>
-&lt;h2 id="disassembly-and-decompilation">Disassembly and Decompilation&lt;/h2>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
+&lt;h2 id="decompilation-and-disassembly">Decompilation and Disassembly&lt;/h2>
+&lt;p>The decompilation of the assembly code looks like this&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+undefined8 main&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">{&lt;/span>
+puts&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Today, we\&amp;#39;ll have a lesson in returns.&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>;
+vuln&lt;span style="color:#f92672">()&lt;/span>;
+&lt;span style="color:#66d9ef">return&lt;/span> 0;
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pwndbg&amp;gt; disassemble main
 Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#66d9ef">function&lt;/span> main:
 0x00000000004011ad &amp;lt;+0&amp;gt;: push rbp
 0x00000000004011ae &amp;lt;+1&amp;gt;: mov rbp,rsp &lt;span style="color:#75715e"># prologue&lt;/span>
@@ -541,14 +569,6 @@ Dump of assembler code &lt;span style="color:#66d9ef">for&lt;/span> &lt;span sty
 0x00000000004011cc &amp;lt;+31&amp;gt;: pop rbp &lt;span style="color:#75715e"># epilogue&lt;/span>
 0x00000000004011cd &amp;lt;+32&amp;gt;: ret
 End of assembler dump.
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>The decompilation of the assembly code looks like this&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
-undefined8 main&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
-&lt;span style="color:#f92672">{&lt;/span>
-puts&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Today, we\&amp;#39;ll have a lesson in returns.&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>;
-vuln&lt;span style="color:#f92672">()&lt;/span>;
-&lt;span style="color:#66d9ef">return&lt;/span> 0;
-&lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>In addition lets take a look at the &lt;code>vuln&lt;/code> function too&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
 void vuln&lt;span style="color:#f92672">(&lt;/span>void&lt;span style="color:#f92672">)&lt;/span>
