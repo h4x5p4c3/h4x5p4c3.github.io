@@ -1362,13 +1362,19 @@ mul rbx ;; rax = rax * rbx = 0x2 * 0x2 = 0x4
 &lt;p>&lt;code>mov eax, 0x8003 ; dividend&lt;/code>&lt;/p>
 &lt;p>&lt;code>mov ecx, 0x100 ; divisor&lt;/code>&lt;/p>
 &lt;p>&lt;code>div ecx ; EAX = 0x80, EDX = 0x3&lt;/code>&lt;/p></content></item><item><title/><link>/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/about/</guid><description>Hello there! I&amp;rsquo;m jones martin better known as h4x5p4c3
-Who Am I? I&amp;rsquo;m a computer science undergrad at Sathyabama University
+Who Am I? I&amp;rsquo;m a computer science undergrad
 What Do I Do? I&amp;rsquo;m very much instrested in reverse engineering and binary exploitation. I play CTF&amp;rsquo;s with zh3r0
 Anythin else? I love customizing linux and im fond of tiling window managers
-How To Reach Me Out? Discord - h4x5p4c3#7079</description><content>&lt;h2 id="hello-there">Hello there!&lt;/h2>
+How To Reach Me Out?
+Twitter h4x5p4c3 Github h4x5p4c3 Discord h4x5p4c3#7079</description><content>&lt;h2 id="hello-there">Hello there!&lt;/h2>
 &lt;p>I&amp;rsquo;m &lt;strong>jones martin&lt;/strong> better known as &lt;code>h4x5p4c3&lt;/code>&lt;/p>
-&lt;p>&lt;strong>Who Am I?&lt;/strong> I&amp;rsquo;m a computer science undergrad at Sathyabama University&lt;/p>
+&lt;p>&lt;strong>Who Am I?&lt;/strong> I&amp;rsquo;m a computer science undergrad&lt;/p>
 &lt;p>&lt;strong>What Do I Do?&lt;/strong> I&amp;rsquo;m very much instrested in reverse engineering and binary exploitation. I play &lt;a href="https://ctftime.org/about">CTF&amp;rsquo;s&lt;/a>
 with &lt;a href="https://www.zh3r0.com/">zh3r0&lt;/a>&lt;/p>
 &lt;p>&lt;strong>Anythin else?&lt;/strong> I love customizing linux and im fond of tiling window managers&lt;/p>
-&lt;p>&lt;strong>How To Reach Me Out?&lt;/strong> &lt;code>Discord - h4x5p4c3#7079&lt;/code>&lt;/p></content></item></channel></rss>
+&lt;p>&lt;strong>How To Reach Me Out?&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>Twitter &lt;a href="https://twitter.com/h4x5p4c3">h4x5p4c3&lt;/a>&lt;/li>
+&lt;li>Github &lt;a href="https://github.com/h4x5p4c3/">h4x5p4c3&lt;/a>&lt;/li>
+&lt;li>Discord &lt;a href="https://discord.com/channels/@me/867011490720907264">h4x5p4c3#7079&lt;/a>&lt;/li>
+&lt;/ul></content></item></channel></rss>
