@@ -1049,7 +1049,7 @@ vim&lt;span style="color:#f92672">/&lt;/span>emacs&lt;span style="color:#f92672"
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The binary and challenge description can be found here
 &lt;a href="https://ropemporium.com/challenge/ret2win.html">ret2win&lt;/a>&lt;/p>
 &lt;p>Lets run the binary and see what happens!&lt;/p>
-&lt;pre>&lt;code class="language-terminal" data-lang="terminal">ret2win64 ➤ ./ret2win
+&lt;pre tabindex="0">&lt;code class="language-terminal" data-lang="terminal">ret2win64 ➤ ./ret2win
 ret2win by ROP Emporium
 x86_64
 For my first trick, I will attempt to fit 56 bytes of user input into 32 bytes of stack buffer!
@@ -1061,7 +1061,7 @@ Exiting
 ret2win64 ➤
 &lt;/code>&lt;/pre>&lt;h2 id="mitigations-in-binaries">Mitigations in binaries&lt;/h2>
 &lt;p>let&amp;rsquo;s checkout the binary mitigations first&lt;/p>
-&lt;pre>&lt;code class="language-terminal" data-lang="terminal">ret2win64 ➤ checksec ret2win
+&lt;pre tabindex="0">&lt;code class="language-terminal" data-lang="terminal">ret2win64 ➤ checksec ret2win
 [*] '/home/h4x5p4c3/Documents/pwn/rop_emporium/0-ret2win/ret2win64/ret2win'
 Arch: amd64-64-little
 RELRO: Partial RELRO
@@ -1155,7 +1155,7 @@ we know the pwnme function contains the vulnerable gets fucntions which we need 
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Its prints the flag this is the exact thing we wanted to do!&lt;/p>
 &lt;p>Now lets find the offset that&amp;rsquo;ll be needed to overwrite the instruction pointer&lt;/p>
 &lt;p>for the pattern value we&amp;rsquo;ll use cyclic from pwntools to find the offset&lt;/p>
-&lt;pre>&lt;code class="language-terminal" data-lang="terminal">ret2win64 ➤ cyclic 60
+&lt;pre tabindex="0">&lt;code class="language-terminal" data-lang="terminal">ret2win64 ➤ cyclic 60
 aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaa
 ret2win64 ➤ ./ret2win
 ret2win by ROP Emporium
@@ -1229,7 +1229,7 @@ pwndbg&amp;gt; q
 In &lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span>: cyclic_find&lt;span style="color:#f92672">(&lt;/span>0x6161616b&lt;span style="color:#f92672">)&lt;/span>
 Out&lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span>: &lt;span style="color:#ae81ff">40&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we know the offset is 40 let&amp;rsquo;s craft our exploit but we notice there&amp;rsquo;s actually a hint give the webpage saying&lt;/p>
-&lt;pre>&lt;code>It's worth confirming this before each challenge but typically you'll need 40 bytes of garbage to reach the saved return address in the 64bit binaries, 44 bytes in the 32bit binaries
+&lt;pre tabindex="0">&lt;code>It's worth confirming this before each challenge but typically you'll need 40 bytes of garbage to reach the saved return address in the 64bit binaries, 44 bytes in the 32bit binaries
 &lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#75715e">#!/usr/bin/env python3 &lt;/span>
 &lt;span style="color:#f92672">from&lt;/span> pwn &lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#f92672">*&lt;/span>
 context&lt;span style="color:#f92672">.&lt;/span>terminal &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;alacritty&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-e&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;sh&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;-c&amp;#39;&lt;/span>]
@@ -1301,14 +1301,14 @@ while execution of large values.(DX and DL)&lt;/p>
 &lt;/ul>
 &lt;h2 id="the-data-section">The data section&lt;/h2>
 &lt;p>The data section is used for declaring initialized data or constant values, file names or buffer size. This data doesn&amp;rsquo;t change at runtime&lt;/p>
-&lt;pre>&lt;code>section.data ;(syntax for declaration)
+&lt;pre tabindex="0">&lt;code>section.data ;(syntax for declaration)
 &lt;/code>&lt;/pre>&lt;h2 id="the-bss-section">The bss section&lt;/h2>
 &lt;p>The bss section is used for declaring variables&lt;/p>
-&lt;pre>&lt;code>section.bss ;(syntax for declaration)
+&lt;pre tabindex="0">&lt;code>section.bss ;(syntax for declaration)
 &lt;/code>&lt;/pre>&lt;h2 id="the-text-section">The text section&lt;/h2>
 &lt;p>The text section contains the actual code this begins with a declaration global _start
 which tells the kernel where the execution of program begins&lt;/p>
-&lt;pre>&lt;code>section.text
+&lt;pre tabindex="0">&lt;code>section.text
 global _start ;(syntax for declaration)
 _start:
 &lt;/code>&lt;/pre>&lt;h2 id="stack">STACK&lt;/h2>
@@ -1325,12 +1325,12 @@ _start:
 &lt;p>&lt;code> ; location on the stack.&lt;/code>&lt;/p>
 &lt;p>&lt;code>sub esp, N ; Grow the stack by N bytes to reserve space for local variables&lt;/code>&lt;/p>
 &lt;p>At this point, we have:&lt;/p>
-&lt;pre>&lt;code>
+&lt;pre tabindex="0">&lt;code>
 ebp + 4: Return address
 ebp + 0: Calling function's old ebp value
 ebp - 4: (local variables)
 &lt;/code>&lt;/pre>&lt;p>The epilogue:&lt;/p>
-&lt;pre>&lt;code>mov esp, ebp ; Put the stack pointer back where it was when this function is called
+&lt;pre tabindex="0">&lt;code>mov esp, ebp ; Put the stack pointer back where it was when this function is called
 pop ebp ; Restore the calling function's stack frame.
 ret ; Return to the calling function.
 &lt;/code>&lt;/pre>&lt;h2 id="instructions">Instructions&lt;/h2>

