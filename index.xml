@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>h4x5p4c3's blog</title><link>/</link><description>Recent content on h4x5p4c3's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright ©️ 2021</copyright><lastBuildDate>Tue, 13 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>hell86</title><link>/posts/hell86/</link><pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate><guid>/posts/hell86/</guid><description>Author : ttlhacker challenge files Description : x86_64 linux binary (tested on debian 9 and ubuntu 18.04, should run on any distro). Takes one command line argument and outputs &amp;ldquo;OK!&amp;rdquo; if it&amp;rsquo;s correct, &amp;ldquo;Wrong&amp;rdquo; if it&amp;rsquo;s not. Partially written in C, actual verification routine is assembly. Don&amp;rsquo;t patch the binary, of course - find the correct input.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>h4x5p4c3's blog</title><link>/</link><description>Recent content on h4x5p4c3's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright ©️ 2022</copyright><lastBuildDate>Tue, 13 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>hell86</title><link>/posts/hell86/</link><pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate><guid>/posts/hell86/</guid><description>Author : ttlhacker challenge files Description : x86_64 linux binary (tested on debian 9 and ubuntu 18.04, should run on any distro). Takes one command line argument and outputs &amp;ldquo;OK!&amp;rdquo; if it&amp;rsquo;s correct, &amp;ldquo;Wrong&amp;rdquo; if it&amp;rsquo;s not. Partially written in C, actual verification routine is assembly. Don&amp;rsquo;t patch the binary, of course - find the correct input.
 Lets open the binary in radare2 and we&amp;rsquo;ll look at the disassembly of the main function</description><content>&lt;ul>
 &lt;li>Author : ttlhacker &lt;a href="https://crackmes.one/crackme/5bc0fe0033c5d4110a29b296">challenge files&lt;/a>&lt;/li>
 &lt;/ul>
@@ -1363,15 +1363,15 @@ mul rbx ;; rax = rax * rbx = 0x2 * 0x2 = 0x4
 &lt;p>&lt;code>mov ecx, 0x100 ; divisor&lt;/code>&lt;/p>
 &lt;p>&lt;code>div ecx ; EAX = 0x80, EDX = 0x3&lt;/code>&lt;/p></content></item><item><title/><link>/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/about/</guid><description>Hello there! I&amp;rsquo;m jones martin better known as h4x5p4c3
 Who Am I? I&amp;rsquo;m a computer science undergrad
-What Do I Do? I&amp;rsquo;m very much instrested in reverse engineering and binary exploitation. I play CTF&amp;rsquo;s with zh3r0
-Anythin else? I love rustlang 🦀 and im fond of tiling window managers
+What Do I Do? I&amp;rsquo;m very much interested in reverse engineering and binary exploitation. I play CTF&amp;rsquo;s with zh3r0
+Anythin else? I love customizing linux and im fond of tiling window managers
 How To Reach Me Out?
 Twitter h4x5p4c3 Github h4x5p4c3</description><content>&lt;h2 id="hello-there">Hello there!&lt;/h2>
 &lt;p>I&amp;rsquo;m &lt;strong>jones martin&lt;/strong> better known as &lt;code>h4x5p4c3&lt;/code>&lt;/p>
 &lt;p>&lt;strong>Who Am I?&lt;/strong> I&amp;rsquo;m a computer science undergrad&lt;/p>
-&lt;p>&lt;strong>What Do I Do?&lt;/strong> I&amp;rsquo;m very much instrested in reverse engineering and binary exploitation. I play &lt;a href="https://ctftime.org/about">CTF&amp;rsquo;s&lt;/a>
+&lt;p>&lt;strong>What Do I Do?&lt;/strong> I&amp;rsquo;m very much interested in reverse engineering and binary exploitation. I play &lt;a href="https://ctftime.org/about">CTF&amp;rsquo;s&lt;/a>
 with &lt;a href="https://www.zh3r0.com/">zh3r0&lt;/a>&lt;/p>
-&lt;p>&lt;strong>Anythin else?&lt;/strong> I love rustlang 🦀 and im fond of tiling window managers&lt;/p>
+&lt;p>&lt;strong>Anythin else?&lt;/strong> I love customizing linux and im fond of tiling window managers&lt;/p>
 &lt;p>&lt;strong>How To Reach Me Out?&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>Twitter &lt;a href="https://twitter.com/h4x5p4c3">h4x5p4c3&lt;/a>&lt;/li>
