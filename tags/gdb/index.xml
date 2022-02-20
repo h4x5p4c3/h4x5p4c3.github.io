@@ -69,7 +69,7 @@ gef&lt;span style="color:#f92672">.&lt;/span>session&lt;span style="color:#f9267
 &lt;span style="color:#75715e"># Returns PID of the debugged process&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="conclusion">conclusion&lt;/h1>
 &lt;img src="/images/gef.png" class="center" style="border-radius: 8px;" />
-&lt;p>GDB has an extremely powerful range of functionality, and when used with its python scritpting api, we can tap into its full functionality to analyze the program. And now that we&amp;rsquo;ve used gef, we can write gdb scripts much more easily, and I plan to update the cheatsheet eventually.&lt;/p>
+&lt;p>GDB has an extremely powerful range of functionality, and when used with its python scripting api, we can tap into its full functionality to analyze the program. And now that we&amp;rsquo;ve used gef, we can write gdb scripts much more easily, and I plan to update the cheatsheet eventually.&lt;/p>
 &lt;img src="/images/garden.gif" class="center" style="border-radius: 12px;" />
 &lt;h1 id="references">References&lt;/h1>
 &lt;ul>
