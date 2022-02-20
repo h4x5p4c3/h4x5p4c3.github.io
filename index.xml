@@ -1,4 +1,82 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>h4x5p4c3's blog</title><link>/</link><description>Recent content on h4x5p4c3's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright ©️ 2022</copyright><lastBuildDate>Tue, 13 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>hell86</title><link>/posts/hell86/</link><pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate><guid>/posts/hell86/</guid><description>Author : ttlhacker challenge files Description : x86_64 linux binary (tested on debian 9 and ubuntu 18.04, should run on any distro). Takes one command line argument and outputs &amp;ldquo;OK!&amp;rdquo; if it&amp;rsquo;s correct, &amp;ldquo;Wrong&amp;rdquo; if it&amp;rsquo;s not. Partially written in C, actual verification routine is assembly. Don&amp;rsquo;t patch the binary, of course - find the correct input.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>h4x5p4c3's blog</title><link>/</link><description>Recent content on h4x5p4c3's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright ©️ 2022</copyright><lastBuildDate>Sun, 20 Feb 2022 00:20:14 +0530</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>GDB gef python cheatsheet</title><link>/posts/gdb-gef-python/</link><pubDate>Sun, 20 Feb 2022 00:20:14 +0530</pubDate><guid>/posts/gdb-gef-python/</guid><description>Recently i&amp;rsquo;ve been working with GDB scripting, and GDB allows scripting through its python api to automate specific tasks by writing a script that executes debugger commnads. Examples include writing a disassembler to perform a disassembly of a VM obfuscated binary during runtime. There are many plugins for GDB, such as peda, gef and pwndbg. GEF is a powerful plugin with many features and the cheatsheet below covers how to use GEF&amp;rsquo;s API for GDB scripting.</description><content>
+&lt;img src="/images/gdb.png" class="center" style="border-radius: 10px;" />
+&lt;blockquote>
+&lt;p>Recently i&amp;rsquo;ve been working with GDB scripting, and GDB allows scripting through its python api to automate specific tasks by writing a script that executes debugger commnads. Examples include writing a disassembler to perform a disassembly of a VM obfuscated binary during runtime. There are many plugins for GDB, such as &lt;a href="https://github.com/longld/peda/">peda&lt;/a>, &lt;a href="https://github.com/hugsy/gef">gef&lt;/a> and &lt;a href="https://github.com/pwndbg/pwndbg">pwndbg&lt;/a>. GEF is a powerful plugin with many features and the cheatsheet below covers how to use GEF&amp;rsquo;s API for GDB scripting.&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="setup-gefhttpsgithubcomhugsygef">setup &lt;a href="https://github.com/hugsy/gef">gef&lt;/a>&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># via the install script&lt;/span>
+$ wget -q -O- https://github.com/hugsy/gef/raw/master/scripts/gef.sh | sh
+&lt;span style="color:#75715e"># manually ![](/images/gdb.png)&lt;/span>
+$ wget -O ~/.gdbinit-gef.py -q https://github.com/hugsy/gef/raw/master/gef.py
+$ echo source ~/.gdbinit-gef.py &amp;gt;&amp;gt; ~/.gdbinit
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="execute-gdb-commands">Execute GDB commands&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">gdb&lt;span style="color:#f92672">.&lt;/span>execute(command: str, to_string: bool &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="get-register-values">Get Register Values&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-py" data-lang="py">gef&lt;span style="color:#f92672">.&lt;/span>arch&lt;span style="color:#f92672">.&lt;/span>register(regname: str)
+&lt;span style="color:#75715e"># Return a register&amp;#39;s value.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>arch&lt;span style="color:#f92672">.&lt;/span>pc
+&lt;span style="color:#75715e"># Returns the program counter value.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>arch&lt;span style="color:#f92672">.&lt;/span>sp
+&lt;span style="color:#75715e"># Returns the stack pointer value.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>arch&lt;span style="color:#f92672">.&lt;/span>fp
+&lt;span style="color:#75715e"># Returns the file pointer value.&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="get-instructions">Get Instructions&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-py" data-lang="py">gef_current_instruction(addr: int)
+&lt;span style="color:#75715e"># Return the current instruction.&lt;/span>
+gef_next_instruction(addr: int)
+&lt;span style="color:#75715e"># Return the next instruction.&lt;/span>
+gef_instruction_n(addr: int, n: int)
+&lt;span style="color:#75715e"># Return the `n`-th instruction after `addr`.&lt;/span>
+gef_get_instruction_at(addr: int)
+&lt;span style="color:#75715e"># Return the full Instruction found at the specified address.&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="assembledisassemble">Assemble/Disassemble&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-py" data-lang="py">keystone_assemble(code: str, arch: int, mode: int)
+&lt;span style="color:#75715e"># Assemble function based on keystone&lt;/span>
+gef_disassemble(addr: int, nb_insn: int)
+&lt;span style="color:#75715e"># Disassembles `nb_insn` after the specified address `addr`&lt;/span>
+capstone_disassemble(addr: int, nb_insn: int)
+&lt;span style="color:#75715e"># Disassembles `nb_insn` after the specified address `addr` using the Capstone-Engine disassembler&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="memory-operations">Memory operations&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-py" data-lang="py">gef&lt;span style="color:#f92672">.&lt;/span>memory&lt;span style="color:#f92672">.&lt;/span>maps
+&lt;span style="color:#75715e"># Return the mapped memory sections&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>memory&lt;span style="color:#f92672">.&lt;/span>write(address: int, buffer: ByteString)
+&lt;span style="color:#75715e"># Write `buffer` at address `address`.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>memory&lt;span style="color:#f92672">.&lt;/span>read(addr: int, length: int &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0x10&lt;/span>)
+&lt;span style="color:#75715e"># Return a `length` long byte array with the copy of the process memory at `addr`.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>memory&lt;span style="color:#f92672">.&lt;/span>read_integer(addr: int)
+&lt;span style="color:#75715e"># Return an integer read from memory.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>memory&lt;span style="color:#f92672">.&lt;/span>read_cstring(address: int)
+&lt;span style="color:#75715e"># Return a C-string read from memory.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>memory&lt;span style="color:#f92672">.&lt;/span>read_ascii_string(address: int)
+&lt;span style="color:#75715e"># Read an ASCII string from memory.&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="miscellaneous">Miscellaneous&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-py" data-lang="py">gef&lt;span style="color:#f92672">.&lt;/span>libc&lt;span style="color:#f92672">.&lt;/span>version
+&lt;span style="color:#75715e"># Retrun the current libc version&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>session&lt;span style="color:#f92672">.&lt;/span>file
+&lt;span style="color:#75715e"># Return the absolute Path object of the target process.&lt;/span>
+parse_address(address: str)
+&lt;span style="color:#75715e"># Parse an address and return it as an Integer.&lt;/span>
+p8(x: int), u8(x: bytes)
+p16(x: int), u16(x: bytes)
+p32(x: int), u32(x: bytes)
+p64(x: int), u64(x: bytes)
+&lt;span style="color:#75715e"># Pack and unpack one byte, word, dword and qword respecting the current architecture endianness.&lt;/span>
+xor(data: ByteString, key: str)
+&lt;span style="color:#75715e"># Return `data` xor-ed with `key`.&lt;/span>
+hexdump()
+&lt;span style="color:#75715e"># Return the hexdump of the argument.&lt;/span>
+gef&lt;span style="color:#f92672">.&lt;/span>session&lt;span style="color:#f92672">.&lt;/span>pid
+&lt;span style="color:#75715e"># Returns PID of the debugged process&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="conclusion">conclusion&lt;/h1>
+&lt;img src="/images/gef.png" class="center" style="border-radius: 8px;" />
+&lt;p>GDB has an extremely powerful range of functionality, and when used with its python scritpting api, we can tap into its full functionality to analyze the program. And now that we&amp;rsquo;ve used gef, we can write gdb scripts much more easily, and I plan to update the cheatsheet eventually.&lt;/p>
+&lt;img src="/images/garden.gif" class="center" style="border-radius: 12px;" />
+&lt;h1 id="references">References&lt;/h1>
+&lt;ul>
+&lt;li>&lt;a href="https://derbenoo.github.io/cheat-sheet/2017/09/23/gdb_python_peda/">GDB peda python scripting cheatsheet&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/hugsy/gef/blob/dev/docs/api/gef.md">GDB gef api&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/hugsy/gef">GDB gef&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>hell86</title><link>/posts/hell86/</link><pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate><guid>/posts/hell86/</guid><description>Author : ttlhacker challenge files Description : x86_64 linux binary (tested on debian 9 and ubuntu 18.04, should run on any distro). Takes one command line argument and outputs &amp;ldquo;OK!&amp;rdquo; if it&amp;rsquo;s correct, &amp;ldquo;Wrong&amp;rdquo; if it&amp;rsquo;s not. Partially written in C, actual verification routine is assembly. Don&amp;rsquo;t patch the binary, of course - find the correct input.
 Lets open the binary in radare2 and we&amp;rsquo;ll look at the disassembly of the main function</description><content>&lt;ul>
 &lt;li>Author : ttlhacker &lt;a href="https://crackmes.one/crackme/5bc0fe0033c5d4110a29b296">challenge files&lt;/a>&lt;/li>
 &lt;/ul>
