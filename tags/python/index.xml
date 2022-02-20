@@ -6,7 +6,7 @@
 &lt;h1 id="setup-gefhttpsgithubcomhugsygef">setup &lt;a href="https://github.com/hugsy/gef">gef&lt;/a>&lt;/h1>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># via the install script&lt;/span>
 $ wget -q -O- https://github.com/hugsy/gef/raw/master/scripts/gef.sh | sh
-&lt;span style="color:#75715e"># manually ![](/images/gdb.png)&lt;/span>
+&lt;span style="color:#75715e"># manually &lt;/span>
 $ wget -O ~/.gdbinit-gef.py -q https://github.com/hugsy/gef/raw/master/gef.py
 $ echo source ~/.gdbinit-gef.py &amp;gt;&amp;gt; ~/.gdbinit
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="execute-gdb-commands">Execute GDB commands&lt;/h1>
