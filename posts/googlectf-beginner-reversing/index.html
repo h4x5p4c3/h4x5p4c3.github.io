@@ -7,86 +7,86 @@ Decompilaton And looking at the decompilation we see a string compare statement 
 #<a href=/tags/asm/>asm</a>&nbsp;
 #<a href=/tags/angr/>angr</a>&nbsp;</span><div class=post-content><div><p><em><strong>Failures aren&rsquo;t the stepping stones to success they&rsquo;re just stones you&rsquo;re the one who decides to step them
 - jones</strong></em></p><h2 id=analysis>Analysis<a href=#analysis class=hanchor arialabel=Anchor>&#8983;</a></h2><p>This is a simple reversing challenge, we need to find the correct flag. The challenge binary has two conditions which prints <code>SUCCESS</code> if the correct flag is passed and it prints <code>FAILURE</code> if its wrong.
-we can simulate this pretty easy with angr and find the flag</p><h2 id=decompilaton>Decompilaton<a href=#decompilaton class=hanchor arialabel=Anchor>&#8983;</a></h2><p>And looking at the decompilation we see a string compare statement which shows the string we&rsquo;re looking for is 16 characters</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c>
-undefined4 <span style=color:#a6e22e>main</span>(<span style=color:#66d9ef>int64_t</span> arg7)
-{
-    <span style=color:#66d9ef>int32_t</span> iVar1;
-    undefined auVar2 [<span style=color:#ae81ff>16</span>];
-    undefined auStack56 [<span style=color:#ae81ff>16</span>];
-    undefined auStack40 [<span style=color:#ae81ff>16</span>];
-    
-    <span style=color:#75715e>// [14] -r-x section size 513 named .text
-</span><span style=color:#75715e></span>    printf(<span style=color:#e6db74>&#34;Flag: &#34;</span>);
-    __isoc99_scanf(<span style=color:#e6db74>&#34;%15s&#34;</span>, auStack56);
-    auVar2 <span style=color:#f92672>=</span> pshufb(auStack56, _SHUFFLE);
-    auStack40 <span style=color:#f92672>=</span> CONCAT412(SUB164(auVar2 <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>0x60</span>, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;ftcg</span><span style=color:#ae81ff>\x02\x06\a\x01\x05\v\t\x0e\x03\x0f\x04\b\n\f\r</span><span style=color:#e6db74>&#34;</span>._0_4_, 
-                          CONCAT48(SUB164(auVar2 <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>0x40</span>, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> <span style=color:#f92672>*</span>(<span style=color:#66d9ef>int32_t</span> <span style=color:#f92672>*</span>)<span style=color:#ae81ff>0x4068</span>, 
-                                   CONCAT44(SUB164(auVar2 <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>0x20</span>, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> <span style=color:#f92672>*</span>(<span style=color:#66d9ef>int32_t</span> <span style=color:#f92672>*</span>)<span style=color:#ae81ff>0x4064</span>, SUB164(auVar2, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> _ADD32))
-                         ) <span style=color:#f92672>^</span> _XOR;
-    iVar1 <span style=color:#f92672>=</span> strncmp(SUB168(auStack40, <span style=color:#ae81ff>0</span>), auStack56, auStack40, <span style=color:#ae81ff>0x10</span>);
-    <span style=color:#66d9ef>if</span> ((iVar1 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) <span style=color:#f92672>&amp;&amp;</span> (iVar1 <span style=color:#f92672>=</span> strncmp(auStack40, _EXPECTED_PREFIX, <span style=color:#ae81ff>4</span>), iVar1 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)) {
-        puts(<span style=color:#e6db74>&#34;SUCCESS&#34;</span>);
-        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-    }
-    puts(<span style=color:#e6db74>&#34;FAILURE&#34;</span>);
-    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>1</span>;
-}
-</code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c>iVar1 <span style=color:#f92672>=</span> strncmp(SUB168(auStack40, <span style=color:#ae81ff>0</span>), auStack56, auStack40, <span style=color:#ae81ff>0x10</span>);
-</code></pre></div><p>0x10 which is 16 in decimal and that has a null byte at end so its considered 16 but the exact size is 15</p><p>Now we lookup for the addresses of the failure string and success string</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>0x00001100      lea     rdi, str.FAILURE ; 0x2018 ; const char *s
-0x00001107      mov     r12d, <span style=color:#ae81ff>1</span>
-0x0000110d      call    puts       ; sym.imp.puts ; int puts<span style=color:#f92672>(</span>const char *s<span style=color:#f92672>)</span>
-0x00001112      add     rsp, 0x28
-0x00001116      mov     eax, r12d
-0x00001119      pop     rbp
-0x0000111a      pop     r12
-0x0000111c      ret
-0x0000111d      lea     rdi, str.SUCCESS ; 0x2010 ; const char *s
-0x00001124      call    puts       ; sym.imp.puts ; int puts<span style=color:#f92672>(</span>const char *s<span style=color:#f92672>)</span>
-</code></pre></div><p><code>FAILURE = 0x00001100</code></p><p><code>success = 0x0000111d</code></p><h1 id=solution>Solution<a href=#solution class=hanchor arialabel=Anchor>&#8983;</a></h1><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e>#!/usr/bin/env python</span>
-<span style=color:#f92672>import</span> angr
-<span style=color:#f92672>import</span> claripy
-<span style=color:#f92672>import</span> sys
-
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>(argv):
-  path_to_binary <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>1</span>]
-  project <span style=color:#f92672>=</span> angr<span style=color:#f92672>.</span>Project(path_to_binary)
-  length <span style=color:#f92672>=</span> <span style=color:#ae81ff>15</span>
-  characters <span style=color:#f92672>=</span> [claripy<span style=color:#f92672>.</span>BVS(<span style=color:#e6db74>&#39;flag{-</span><span style=color:#e6db74>%d</span><span style=color:#e6db74>&#39;</span> <span style=color:#f92672>%</span>i, <span style=color:#ae81ff>8</span>) <span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> range(length)]
-  input_ <span style=color:#f92672>=</span> claripy<span style=color:#f92672>.</span>Concat(<span style=color:#f92672>*</span>characters <span style=color:#f92672>+</span> [claripy<span style=color:#f92672>.</span>BVV(<span style=color:#e6db74>b</span><span style=color:#e6db74>&#39;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span>)])
-
-  state <span style=color:#f92672>=</span> project<span style=color:#f92672>.</span>factory<span style=color:#f92672>.</span>full_init_state(args<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;path_to_binary&#34;</span>], stdin<span style=color:#f92672>=</span>input_)    
-  <span style=color:#66d9ef>for</span> x <span style=color:#f92672>in</span> characters:
-      state<span style=color:#f92672>.</span>solver<span style=color:#f92672>.</span>add(x <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>127</span>) <span style=color:#75715e>## we add constraints to make the flag readable</span>
-      state<span style=color:#f92672>.</span>solver<span style=color:#f92672>.</span>add(x <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>32</span>)
-
-  simulate <span style=color:#f92672>=</span> project<span style=color:#f92672>.</span>factory<span style=color:#f92672>.</span>simulation_manager(state) <span style=color:#75715e># we launch the exploration state for the Success addr and Failure addr</span>
-  _success_addr <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0010111d</span>
-  _failure_addr <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x00101100</span>
-  simulate<span style=color:#f92672>.</span>explore(find<span style=color:#f92672>=</span>_success_addr, avoid<span style=color:#f92672>=</span>_failure_addr)  
-
-  s <span style=color:#f92672>=</span> []
-  <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> simulate<span style=color:#f92672>.</span>deadended:
-      <span style=color:#66d9ef>if</span> <span style=color:#e6db74>b</span><span style=color:#e6db74>&#34;SUCCESS&#34;</span> <span style=color:#f92672>in</span> j<span style=color:#f92672>.</span>posix<span style=color:#f92672>.</span>dumps(<span style=color:#ae81ff>1</span>):
-          s<span style=color:#f92672>.</span>append(j)
-
-
-  valid <span style=color:#f92672>=</span> s[<span style=color:#ae81ff>0</span>]<span style=color:#f92672>.</span>posix<span style=color:#f92672>.</span>dumps(<span style=color:#ae81ff>0</span>)
-  print(valid<span style=color:#f92672>.</span>decode(<span style=color:#e6db74>&#39;utf-8&#39;</span>))
-
-<span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;__main__&#39;</span>:
-  main(sys<span style=color:#f92672>.</span>argv)
-</code></pre></div><p>After running our solution script we captured our flag 🚩</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>angr ➤ python solve.py ./a.out
-WARNING | 2020-09-09 08:36:15,359 | cle.loader | The main binary is a position-independent executable. It is being loaded with a base address of 0x400000.
-WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | The program is accessing memory or registers with an unspecified value. This could indicate unwanted behavior.
-WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | angr will cope with this by generating an unconstrained symbolic variable and continuing. You can resolve this by:
-WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | 1<span style=color:#f92672>)</span> setting a value to the initial state
-WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | 2<span style=color:#f92672>)</span> adding the state option ZERO_FILL_UNCONSTRAINED_<span style=color:#f92672>{</span>MEMORY,REGISTERS<span style=color:#f92672>}</span>, to make unknown regions hold null
-WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | 3<span style=color:#f92672>)</span> adding the state option SYMBOL_FILL_UNCONSTRAINED_<span style=color:#f92672>{</span>MEMORY_REGISTERS<span style=color:#f92672>}</span>, to suppress these messages.
-WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | Filling memory at 0x7fffffffffefff8 with <span style=color:#ae81ff>8</span> unconstrained bytes referenced from 0x59f2cd <span style=color:#f92672>(</span>__strrchr_sse2+0x25d in libc.so.6 <span style=color:#f92672>(</span>0x9f2cd<span style=color:#f92672>))</span>
-WARNING | 2020-09-09 08:36:18,712 | angr.state_plugins.symbolic_memory | Filling memory at 0x7ffffffffff0000 with <span style=color:#ae81ff>48</span> unconstrained bytes referenced from 0x58fd40 <span style=color:#f92672>(</span>strncmp+0x0 in libc.so.6 <span style=color:#f92672>(</span>0x8fd40<span style=color:#f92672>))</span>
-WARNING | 2020-09-09 08:36:18,724 | angr.state_plugins.symbolic_memory | Filling memory at 0x7ffffffffff0030 with <span style=color:#ae81ff>16</span> unconstrained bytes referenced from 0x58fd40 <span style=color:#f92672>(</span>strncmp+0x0 in libc.so.6 <span style=color:#f92672>(</span>0x8fd40<span style=color:#f92672>))</span>
-CTF<span style=color:#f92672>{</span>S1MDf0rM3!<span style=color:#f92672>}</span>
-</code></pre></div><p><img src=/images/flag_submitted_compressed.gif alt></p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=/posts/ductf-return-to-what/><span class=button__icon>←</span>
+we can simulate this pretty easy with angr and find the flag</p><h2 id=decompilaton>Decompilaton<a href=#decompilaton class=hanchor arialabel=Anchor>&#8983;</a></h2><p>And looking at the decompilation we see a string compare statement which shows the string we&rsquo;re looking for is 16 characters</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>
+</span></span><span style=display:flex><span>undefined4 <span style=color:#a6e22e>main</span>(<span style=color:#66d9ef>int64_t</span> arg7)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int32_t</span> iVar1;
+</span></span><span style=display:flex><span>    undefined auVar2 [<span style=color:#ae81ff>16</span>];
+</span></span><span style=display:flex><span>    undefined auStack56 [<span style=color:#ae81ff>16</span>];
+</span></span><span style=display:flex><span>    undefined auStack40 [<span style=color:#ae81ff>16</span>];
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// [14] -r-x section size 513 named .text
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    printf(<span style=color:#e6db74>&#34;Flag: &#34;</span>);
+</span></span><span style=display:flex><span>    __isoc99_scanf(<span style=color:#e6db74>&#34;%15s&#34;</span>, auStack56);
+</span></span><span style=display:flex><span>    auVar2 <span style=color:#f92672>=</span> pshufb(auStack56, _SHUFFLE);
+</span></span><span style=display:flex><span>    auStack40 <span style=color:#f92672>=</span> CONCAT412(SUB164(auVar2 <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>0x60</span>, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;ftcg</span><span style=color:#ae81ff>\x02\x06\a\x01\x05\v\t\x0e\x03\x0f\x04\b\n\f\r</span><span style=color:#e6db74>&#34;</span>._0_4_, 
+</span></span><span style=display:flex><span>                          CONCAT48(SUB164(auVar2 <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>0x40</span>, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> <span style=color:#f92672>*</span>(<span style=color:#66d9ef>int32_t</span> <span style=color:#f92672>*</span>)<span style=color:#ae81ff>0x4068</span>, 
+</span></span><span style=display:flex><span>                                   CONCAT44(SUB164(auVar2 <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>0x20</span>, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> <span style=color:#f92672>*</span>(<span style=color:#66d9ef>int32_t</span> <span style=color:#f92672>*</span>)<span style=color:#ae81ff>0x4064</span>, SUB164(auVar2, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span> _ADD32))
+</span></span><span style=display:flex><span>                         ) <span style=color:#f92672>^</span> _XOR;
+</span></span><span style=display:flex><span>    iVar1 <span style=color:#f92672>=</span> strncmp(SUB168(auStack40, <span style=color:#ae81ff>0</span>), auStack56, auStack40, <span style=color:#ae81ff>0x10</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> ((iVar1 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) <span style=color:#f92672>&amp;&amp;</span> (iVar1 <span style=color:#f92672>=</span> strncmp(auStack40, _EXPECTED_PREFIX, <span style=color:#ae81ff>4</span>), iVar1 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)) {
+</span></span><span style=display:flex><span>        puts(<span style=color:#e6db74>&#34;SUCCESS&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    puts(<span style=color:#e6db74>&#34;FAILURE&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>iVar1 <span style=color:#f92672>=</span> strncmp(SUB168(auStack40, <span style=color:#ae81ff>0</span>), auStack56, auStack40, <span style=color:#ae81ff>0x10</span>);
+</span></span></code></pre></div><p>0x10 which is 16 in decimal and that has a null byte at end so its considered 16 but the exact size is 15</p><p>Now we lookup for the addresses of the failure string and success string</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>0x00001100      lea     rdi, str.FAILURE ; 0x2018 ; const char *s
+</span></span><span style=display:flex><span>0x00001107      mov     r12d, <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>0x0000110d      call    puts       ; sym.imp.puts ; int puts<span style=color:#f92672>(</span>const char *s<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>0x00001112      add     rsp, 0x28
+</span></span><span style=display:flex><span>0x00001116      mov     eax, r12d
+</span></span><span style=display:flex><span>0x00001119      pop     rbp
+</span></span><span style=display:flex><span>0x0000111a      pop     r12
+</span></span><span style=display:flex><span>0x0000111c      ret
+</span></span><span style=display:flex><span>0x0000111d      lea     rdi, str.SUCCESS ; 0x2010 ; const char *s
+</span></span><span style=display:flex><span>0x00001124      call    puts       ; sym.imp.puts ; int puts<span style=color:#f92672>(</span>const char *s<span style=color:#f92672>)</span>
+</span></span></code></pre></div><p><code>FAILURE = 0x00001100</code></p><p><code>success = 0x0000111d</code></p><h1 id=solution>Solution<a href=#solution class=hanchor arialabel=Anchor>&#8983;</a></h1><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e>#!/usr/bin/env python</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> angr
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> claripy
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> sys
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>(argv):
+</span></span><span style=display:flex><span>  path_to_binary <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>1</span>]
+</span></span><span style=display:flex><span>  project <span style=color:#f92672>=</span> angr<span style=color:#f92672>.</span>Project(path_to_binary)
+</span></span><span style=display:flex><span>  length <span style=color:#f92672>=</span> <span style=color:#ae81ff>15</span>
+</span></span><span style=display:flex><span>  characters <span style=color:#f92672>=</span> [claripy<span style=color:#f92672>.</span>BVS(<span style=color:#e6db74>&#39;flag{-</span><span style=color:#e6db74>%d</span><span style=color:#e6db74>&#39;</span> <span style=color:#f92672>%</span>i, <span style=color:#ae81ff>8</span>) <span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> range(length)]
+</span></span><span style=display:flex><span>  input_ <span style=color:#f92672>=</span> claripy<span style=color:#f92672>.</span>Concat(<span style=color:#f92672>*</span>characters <span style=color:#f92672>+</span> [claripy<span style=color:#f92672>.</span>BVV(<span style=color:#e6db74>b</span><span style=color:#e6db74>&#39;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span>)])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  state <span style=color:#f92672>=</span> project<span style=color:#f92672>.</span>factory<span style=color:#f92672>.</span>full_init_state(args<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;path_to_binary&#34;</span>], stdin<span style=color:#f92672>=</span>input_)    
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>for</span> x <span style=color:#f92672>in</span> characters:
+</span></span><span style=display:flex><span>      state<span style=color:#f92672>.</span>solver<span style=color:#f92672>.</span>add(x <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>127</span>) <span style=color:#75715e>## we add constraints to make the flag readable</span>
+</span></span><span style=display:flex><span>      state<span style=color:#f92672>.</span>solver<span style=color:#f92672>.</span>add(x <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>32</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  simulate <span style=color:#f92672>=</span> project<span style=color:#f92672>.</span>factory<span style=color:#f92672>.</span>simulation_manager(state) <span style=color:#75715e># we launch the exploration state for the Success addr and Failure addr</span>
+</span></span><span style=display:flex><span>  _success_addr <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x0010111d</span>
+</span></span><span style=display:flex><span>  _failure_addr <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x00101100</span>
+</span></span><span style=display:flex><span>  simulate<span style=color:#f92672>.</span>explore(find<span style=color:#f92672>=</span>_success_addr, avoid<span style=color:#f92672>=</span>_failure_addr)  
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  s <span style=color:#f92672>=</span> []
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> simulate<span style=color:#f92672>.</span>deadended:
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>if</span> <span style=color:#e6db74>b</span><span style=color:#e6db74>&#34;SUCCESS&#34;</span> <span style=color:#f92672>in</span> j<span style=color:#f92672>.</span>posix<span style=color:#f92672>.</span>dumps(<span style=color:#ae81ff>1</span>):
+</span></span><span style=display:flex><span>          s<span style=color:#f92672>.</span>append(j)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  valid <span style=color:#f92672>=</span> s[<span style=color:#ae81ff>0</span>]<span style=color:#f92672>.</span>posix<span style=color:#f92672>.</span>dumps(<span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>  print(valid<span style=color:#f92672>.</span>decode(<span style=color:#e6db74>&#39;utf-8&#39;</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>  main(sys<span style=color:#f92672>.</span>argv)
+</span></span></code></pre></div><p>After running our solution script we captured our flag 🚩</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>angr ➤ python solve.py ./a.out
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:15,359 | cle.loader | The main binary is a position-independent executable. It is being loaded with a base address of 0x400000.
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | The program is accessing memory or registers with an unspecified value. This could indicate unwanted behavior.
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | angr will cope with this by generating an unconstrained symbolic variable and continuing. You can resolve this by:
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | 1<span style=color:#f92672>)</span> setting a value to the initial state
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | 2<span style=color:#f92672>)</span> adding the state option ZERO_FILL_UNCONSTRAINED_<span style=color:#f92672>{</span>MEMORY,REGISTERS<span style=color:#f92672>}</span>, to make unknown regions hold null
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | 3<span style=color:#f92672>)</span> adding the state option SYMBOL_FILL_UNCONSTRAINED_<span style=color:#f92672>{</span>MEMORY_REGISTERS<span style=color:#f92672>}</span>, to suppress these messages.
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:17,016 | angr.state_plugins.symbolic_memory | Filling memory at 0x7fffffffffefff8 with <span style=color:#ae81ff>8</span> unconstrained bytes referenced from 0x59f2cd <span style=color:#f92672>(</span>__strrchr_sse2+0x25d in libc.so.6 <span style=color:#f92672>(</span>0x9f2cd<span style=color:#f92672>))</span>
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:18,712 | angr.state_plugins.symbolic_memory | Filling memory at 0x7ffffffffff0000 with <span style=color:#ae81ff>48</span> unconstrained bytes referenced from 0x58fd40 <span style=color:#f92672>(</span>strncmp+0x0 in libc.so.6 <span style=color:#f92672>(</span>0x8fd40<span style=color:#f92672>))</span>
+</span></span><span style=display:flex><span>WARNING | 2020-09-09 08:36:18,724 | angr.state_plugins.symbolic_memory | Filling memory at 0x7ffffffffff0030 with <span style=color:#ae81ff>16</span> unconstrained bytes referenced from 0x58fd40 <span style=color:#f92672>(</span>strncmp+0x0 in libc.so.6 <span style=color:#f92672>(</span>0x8fd40<span style=color:#f92672>))</span>
+</span></span><span style=display:flex><span>CTF<span style=color:#f92672>{</span>S1MDf0rM3!<span style=color:#f92672>}</span>
+</span></span></code></pre></div><p><img src=/images/flag_submitted_compressed.gif alt></p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=/posts/ductf-return-to-what/><span class=button__icon>←</span>
 <span class=button__text>DUCTF-return-to-what</span></a></span>
 <span class="button next"><a href=/posts/ropemporium-callme-64bit/><span class=button__text>Ropemporium callme 64bit</span>
 <span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user"><span>Copyright ©️ 2022</span>

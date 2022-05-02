@@ -14,26 +14,22 @@ the data is stored continuously. Base register value is used to find the data th
 while execution of large values.(DX and DL)</p><pre><code>DX - data register  =&gt; DH, DL
 </code></pre><p>ESI - used for string operations as source index</p><pre><code>SI - source index 
 </code></pre><p>EDI - used for string operations as destination index</p><pre><code>DI - destinaton index
-</code></pre><p>The registers [ EAX, EBX, ECX, EDX ] can be used as subsections as shown in EAX, it contains a 16bit register AX which is split into two 8 bit registers again AH and AL</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>32-bit register <span style=color:#f92672>[</span>EAX, EBX, ECX, EDX, ESI, EDI, ESP, or EBP<span style=color:#f92672>]</span>
-16-bit register <span style=color:#f92672>[</span>AX, BX, CX, or DX<span style=color:#f92672>]</span>
-8-bit register <span style=color:#f92672>[</span>AH, BH, CH, DH, AL, BL, CL, or DL<span style=color:#f92672>]</span> 
-</code></pre></div><p>An assembly program can be split into three sections</p><ul><li>The data section</li><li>The bss section</li><li>the text section</li></ul><h2 id=the-data-section>The data section<a href=#the-data-section class=hanchor arialabel=Anchor>&#8983;</a></h2><p>The data section is used for declaring initialized data or constant values, file names or buffer size. This data doesn&rsquo;t change at runtime</p><pre tabindex=0><code>section.data ;(syntax for declaration)
-
+</code></pre><p>The registers [ EAX, EBX, ECX, EDX ] can be used as subsections as shown in EAX, it contains a 16bit register AX which is split into two 8 bit registers again AH and AL</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>32-bit register <span style=color:#f92672>[</span>EAX, EBX, ECX, EDX, ESI, EDI, ESP, or EBP<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>16-bit register <span style=color:#f92672>[</span>AX, BX, CX, or DX<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>8-bit register <span style=color:#f92672>[</span>AH, BH, CH, DH, AL, BL, CL, or DL<span style=color:#f92672>]</span> 
+</span></span></code></pre></div><p>An assembly program can be split into three sections</p><ul><li>The data section</li><li>The bss section</li><li>the text section</li></ul><h2 id=the-data-section>The data section<a href=#the-data-section class=hanchor arialabel=Anchor>&#8983;</a></h2><p>The data section is used for declaring initialized data or constant values, file names or buffer size. This data doesn&rsquo;t change at runtime</p><pre tabindex=0><code>section.data ;(syntax for declaration)
 </code></pre><h2 id=the-bss-section>The bss section<a href=#the-bss-section class=hanchor arialabel=Anchor>&#8983;</a></h2><p>The bss section is used for declaring variables</p><pre tabindex=0><code>section.bss ;(syntax for declaration)
-
 </code></pre><h2 id=the-text-section>The text section<a href=#the-text-section class=hanchor arialabel=Anchor>&#8983;</a></h2><p>The text section contains the actual code this begins with a declaration global _start
 which tells the kernel where the execution of program begins</p><pre tabindex=0><code>section.text
    global _start ;(syntax for declaration)
 _start:
-
 </code></pre><h2 id=stack>STACK<a href=#stack class=hanchor arialabel=Anchor>&#8983;</a></h2><p>It is an abstract data structure which consists of information in a Last In First Out system(LIFO). You put arbitrary objects onto the stack and then you take them off again, much like an in/out tray, the top item is always the one that is taken off and you always put on to the top.</p><p>It generally has a static size per program and frequently used to store function parameters. You push the parameters onto the stack when you call a function and the function either address the stack directly or pops off the variables from the stack.</p><p><img src=/images/stack-convention.png alt></p><h2 id=function-prologue-and-epilogue>Function prologue and epilogue<a href=#function-prologue-and-epilogue class=hanchor arialabel=Anchor>&#8983;</a></h2><p>The prolouge is what happens at the beginning of a function. Its responsibility is to set up the stack frame of the called function. The epilogue is the exact opposite: it is what happens last in a function, and its purpose is to restore the stack frame of the called (parent) function.</p><p>In x86, the ebp register is used by the language to keep track of the function&rsquo;s stack frame. The esp register is used by the processor to point to the most recent addition (the top value) on the stack.</p><p>The call instruction does two things: First it pushes the return address onto the stack, then it jumps to the function being called. Immediately after the call, esp points to the return address on the stack.</p><p>Then the prologue is executed:</p><p><code>push ebp ; Save the stack-frame base pointer (of the calling function).</code></p><p><code>mov ebp, esp ; Set the stack-frame base pointer to be the current</code></p><p><code>; location on the stack.</code></p><p><code>sub esp, N ; Grow the stack by N bytes to reserve space for local variables</code></p><p>At this point, we have:</p><pre tabindex=0><code>
 ebp + 4:    Return address
-ebp + 0:    Calling function's old ebp value
+ebp + 0:    Calling function&#39;s old ebp value
 ebp - 4:    (local variables)
-
 </code></pre><p>The epilogue:</p><pre tabindex=0><code>mov esp, ebp    ; Put the stack pointer back where it was when this function is called
 
-pop ebp         ; Restore the calling function's stack frame.
+pop ebp         ; Restore the calling function&#39;s stack frame.
 
 ret             ; Return to the calling function.
 </code></pre><h2 id=instructions>Instructions<a href=#instructions class=hanchor arialabel=Anchor>&#8983;</a></h2><p>There are some basic intructions in assembly language such as add, sub, mul, div</p><h2 id=add>ADD<a href=#add class=hanchor arialabel=Anchor>&#8983;</a></h2><p>add instruction is used to add two numbers together. You can use it to add a value directly to memory or to a register</p><p>Eg: <code>mov rax, 0x1 ;; rax equals to 0x1</code></p><pre><code>mov rbx, 0x2 ;; rbx equals to 0x2
